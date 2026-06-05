@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { db } from '../firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { INITIAL_STATE, DEFAULT_TASKS } from '../utils/constants';
 import { getLogicalDate } from '../utils/dateUtils';
 
@@ -38,22 +38,25 @@ export const useStore = create(
       doneQuests: {},
       isHydrated: false,
 
-      fetchFromFirebase: async () => {
+      fetchFromFirebase: () => {
         if (!db) {
           set({ isHydrated: true });
           return;
         }
-        try {
-          const snap = await getDoc(doc(db, "users", "nitu_progress"));
+        
+        onSnapshot(doc(db, "users", "nitu_progress"), (snap) => {
           if (snap.exists()) {
+            window.__isUpdatingFromFirebase = true;
             set({ ...snap.data(), isHydrated: true });
+            // Let the synchronous subscriptions run before unlocking
+            setTimeout(() => { window.__isUpdatingFromFirebase = false; }, 10);
           } else {
             set({ isHydrated: true });
           }
-        } catch (err) {
+        }, (err) => {
           console.error("Firebase fetch error:", err);
           set({ isHydrated: true });
-        }
+        });
       },
 
       showToast: (msg) => {
@@ -166,7 +169,8 @@ export const useStore = create(
 
 // Subscribe to store changes to push to Firebase in the background
 useStore.subscribe(async (state) => {
-  if (!db || !state.isHydrated) return; // Wait until initial data is pulled
+  if (!db || !state.isHydrated || window.__isUpdatingFromFirebase) return; // Prevent infinite loop
+
   
   try {
     const dataToSync = {

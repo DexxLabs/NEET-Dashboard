@@ -22,12 +22,11 @@ function App() {
 
   useEffect(() => {
     let interval;
-    fetchFromFirebase().then(() => {
+    fetchFromFirebase();
+    checkDayShift();
+    interval = setInterval(() => {
       checkDayShift();
-      interval = setInterval(() => {
-        checkDayShift();
-      }, 60000);
-    });
+    }, 60000);
     return () => {
       if (interval) clearInterval(interval);
     };
