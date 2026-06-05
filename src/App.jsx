@@ -17,14 +17,30 @@ import { useStore } from './store/useStore';
 
 function App() {
   const checkDayShift = useStore(state => state.checkDayShift);
+  const fetchFromFirebase = useStore(state => state.fetchFromFirebase);
+  const isHydrated = useStore(state => state.isHydrated);
 
   useEffect(() => {
-    checkDayShift();
-    const interval = setInterval(() => {
+    let interval;
+    fetchFromFirebase().then(() => {
       checkDayShift();
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [checkDayShift]);
+      interval = setInterval(() => {
+        checkDayShift();
+      }, 60000);
+    });
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [fetchFromFirebase, checkDayShift]);
+
+  if (!isHydrated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center flex-col gap-4 relative overflow-hidden">
+        <div className="text-6xl animate-bounce">🐰</div>
+        <div className="text-coral font-bold text-xl tracking-wide">Syncing Progress...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden">

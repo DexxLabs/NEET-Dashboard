@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { db } from '../firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { INITIAL_STATE, DEFAULT_TASKS } from '../utils/constants';
 import { getLogicalDate } from '../utils/dateUtils';
 
@@ -36,6 +36,25 @@ export const useStore = create(
     (set, get) => ({
       ...INITIAL_STATE,
       doneQuests: {},
+      isHydrated: false,
+
+      fetchFromFirebase: async () => {
+        if (!db) {
+          set({ isHydrated: true });
+          return;
+        }
+        try {
+          const snap = await getDoc(doc(db, "users", "nitu_progress"));
+          if (snap.exists()) {
+            set({ ...snap.data(), isHydrated: true });
+          } else {
+            set({ isHydrated: true });
+          }
+        } catch (err) {
+          console.error("Firebase fetch error:", err);
+          set({ isHydrated: true });
+        }
+      },
 
       showToast: (msg) => {
         set((state) => ({ toastQueue: [...state.toastQueue, msg] }));
@@ -147,7 +166,7 @@ export const useStore = create(
 
 // Subscribe to store changes to push to Firebase in the background
 useStore.subscribe(async (state) => {
-  if (!db) return; // Silent return if Firebase is not configured
+  if (!db || !state.isHydrated) return; // Wait until initial data is pulled
   
   try {
     const dataToSync = {
@@ -156,9 +175,11 @@ useStore.subscribe(async (state) => {
       streak: state.streak,
       badges: state.badges,
       completedChapters: state.completedChapters,
-      mockScores: state.mockScores,
+      scores: state.scores,
       lastLoginDate: state.lastLoginDate,
       dailyTasks: state.dailyTasks,
+      doneQuests: state.doneQuests,
+      questsDone: state.questsDone,
       lastUpdated: new Date().toISOString()
     };
     
