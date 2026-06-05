@@ -25,7 +25,7 @@ export const Badges = () => {
             <div 
               key={b.id}
               title={b.title}
-              className={`rounded-[14px] px-2.5 py-3.5 text-center border-2 transition-all duration-200 cursor-pointer ${
+              className={`rounded-[14px] px-2.5 py-3.5 text-center border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center ${
                 unlocked 
                   ? 'bg-blue-pale border-blue-light hover:-translate-y-[2px]' 
                   : 'bg-cream-dark border-transparent'
