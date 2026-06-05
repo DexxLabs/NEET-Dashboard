@@ -19,8 +19,14 @@ function App() {
   const checkDayShift = useStore(state => state.checkDayShift);
   const fetchFromFirebase = useStore(state => state.fetchFromFirebase);
   const isHydrated = useStore(state => state.isHydrated);
+  const resetProgress = useStore(state => state.resetProgress);
 
   useEffect(() => {
+    if (window.location.search.includes('reset=true')) {
+      resetProgress();
+      return;
+    }
+
     let interval;
     fetchFromFirebase();
     checkDayShift();
@@ -30,7 +36,16 @@ function App() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [fetchFromFirebase, checkDayShift]);
+  }, [fetchFromFirebase, checkDayShift, resetProgress]);
+
+  if (window.location.search.includes('reset=true')) {
+    return (
+      <div className="min-h-screen flex items-center justify-center flex-col gap-4 relative overflow-hidden bg-white">
+        <div className="text-6xl animate-spin">🌀</div>
+        <div className="text-coral font-bold text-xl tracking-wide">Wiping Database Clean...</div>
+      </div>
+    );
+  }
 
   if (!isHydrated) {
     return (

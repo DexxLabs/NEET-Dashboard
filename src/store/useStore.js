@@ -38,6 +38,16 @@ export const useStore = create(
       doneQuests: {},
       isHydrated: false,
 
+      resetProgress: async () => {
+        set({ ...INITIAL_STATE, doneQuests: {}, streakClaimedToday: false, isHydrated: true });
+        localStorage.removeItem('nituNeet2025');
+        if (db) {
+          const { doc, deleteDoc } = await import('firebase/firestore');
+          await deleteDoc(doc(db, "users", "nitu_progress")).catch(() => {});
+        }
+        window.location.href = '/';
+      },
+
       fetchFromFirebase: () => {
         if (!db) {
           set({ isHydrated: true });
