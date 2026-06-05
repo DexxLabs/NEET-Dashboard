@@ -11,6 +11,7 @@ import { SubjectProgress } from './components/analytics/SubjectProgress';
 import { MockScoreLog } from './components/analytics/MockScoreLog';
 import { Badges } from './components/gamification/Badges';
 import { PowerUps } from './components/interactivity/PowerUps';
+import { FocusTimer } from './components/interactivity/FocusTimer';
 import { SyllabusChecklist } from './components/analytics/SyllabusChecklist';
 import { CustomCursor } from './components/ui/CustomCursor';
 import { useStore } from './store/useStore';
@@ -86,9 +87,10 @@ function App() {
           <MockScoreLog />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
           <Badges />
           <PowerUps />
+          <FocusTimer />
         </div>
 
         <SyllabusChecklist />

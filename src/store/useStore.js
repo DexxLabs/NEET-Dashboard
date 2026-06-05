@@ -211,6 +211,18 @@ export const useStore = create(
           newScores[index] = { ...newScores[index], bio: Number(bio), phy: Number(phy), che: Number(che), total };
           return { scores: newScores };
         });
+      },
+
+      addXP: (amount, msg) => {
+        set((state) => {
+          const partial = { xp: state.xp + amount };
+          const badgeUpdates = checkBadges(state, partial);
+          
+          if (msg) get().showToast(msg);
+          if (badgeUpdates.newToastMsg) setTimeout(() => get().showToast(badgeUpdates.newToastMsg), 1500);
+
+          return { xp: badgeUpdates.xp, badges: badgeUpdates.badges };
+        });
       }
     }),
     {
