@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { db } from '../firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { INITIAL_STATE, DEFAULT_TASKS } from '../utils/constants';
 import { getLogicalDate } from '../utils/dateUtils';
 
@@ -142,3 +144,26 @@ export const useStore = create(
     }
   )
 );
+
+// Subscribe to store changes to push to Firebase in the background
+useStore.subscribe(async (state) => {
+  if (!db) return; // Silent return if Firebase is not configured
+  
+  try {
+    const dataToSync = {
+      xp: state.xp,
+      level: state.level,
+      streak: state.streak,
+      badges: state.badges,
+      completedChapters: state.completedChapters,
+      mockScores: state.mockScores,
+      lastLoginDate: state.lastLoginDate,
+      dailyTasks: state.dailyTasks,
+      lastUpdated: new Date().toISOString()
+    };
+    
+    await setDoc(doc(db, "users", "nitu_progress"), dataToSync);
+  } catch (err) {
+    console.error("Firebase sync error:", err);
+  }
+});
