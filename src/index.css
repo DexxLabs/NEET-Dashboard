@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@theme {
+  --color-blue: #2945A8;
+  --color-blue-light: #3D5FC7;
+  --color-blue-pale: #E6EEFF;
+  --color-yellow: #FFCC7A;
+  --color-yellow-deep: #F0A500;
+  --color-coral: #F78660;
+  --color-coral-light: #FFB5A0;
+  --color-cream: #FDF6EC;
+  --color-cream-dark: #F5ECD8;
+  --color-text-dark: #1A2340;
+  --color-text-mid: #3D4F7C;
+  --color-text-muted: #8893B5;
+  --font-nunito: "Nunito", sans-serif;
+  --font-baloo: "Baloo 2", sans-serif;
+  --radius-base: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 100px;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-nunito);
+    background-color: var(--color-cream);
+    background-image:
+      radial-gradient(circle at 10% 15%, #FFE0CC 0%, transparent 35%),
+      radial-gradient(circle at 90% 80%, #C8D8FF 0%, transparent 35%),
+      radial-gradient(circle at 60% 40%, #FFEFD6 0%, transparent 25%);
+    color: var(--color-text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  @media (pointer: fine) {
+    body, a, button, select, input, .cursor-pointer, [role="button"] {
+      cursor: none !important;
+    }
+  }
+}
+
+/* Custom utilities that might not perfectly translate to arbitrary Tailwind classes */
+.xp-bar-fill {
+  transition: width 1s ease;
+}
+
+.subj-bar-fill {
+  transition: width 1s ease;
+}
+
+/* Toast animation */
+.toast-enter {
+  transform: translateX(-50%) translateY(120px);
+}
+.toast-enter-active {
+  transform: translateX(-50%) translateY(0);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+.toast-exit {
+  transform: translateX(-50%) translateY(0);
+}
+.toast-exit-active {
+  transform: translateX(-50%) translateY(120px);
+  transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
