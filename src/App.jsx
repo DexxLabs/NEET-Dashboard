@@ -44,6 +44,10 @@ function App() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       <CustomCursor />
+      {/* DEBUG BANNER */}
+      <div className="fixed top-0 left-0 right-0 bg-red-500 text-white text-[10px] p-1 z-[999] text-center font-mono break-all">
+        DEBUG: API_KEY={import.meta.env.VITE_FIREBASE_API_KEY ? 'EXISTS' : 'MISSING'} | HYDRATED={isHydrated ? 'YES' : 'NO'}
+      </div>
       {/* Cute floating elements */}
       <div className="fixed top-28 left-[5%] text-5xl opacity-[0.15] animate-[bounce_6s_infinite] pointer-events-none z-0 select-none">🌸</div>
       <div className="fixed bottom-32 left-[10%] text-6xl opacity-[0.15] animate-[pulse_4s_infinite] pointer-events-none z-0 select-none">✨</div>
