@@ -18,6 +18,7 @@ export const DailyGoals = () => {
           const bgClass = task.subject === 'Physics' ? 'bg-blue-pale border-blue-light/50' 
             : task.subject === 'Chemistry' ? 'bg-[#FFF3EE] border-[#FFD0B8]' 
             : task.subject === 'Mock Test' ? 'bg-[#FFF8E0] border-yellow' 
+            : task.subject === 'Self Care' ? 'bg-[#FFF0F5] border-[#FFD6E8]' 
             : 'bg-[#F0FFF8] border-[#9EECD0]'; // Botany/Zoology
 
           const weightMap = { 'High': 3, 'Medium': 2, 'Low': 1 };

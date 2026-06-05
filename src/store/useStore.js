@@ -43,11 +43,19 @@ export const useStore = create(
           set({ isHydrated: true });
           return;
         }
-        
         onSnapshot(doc(db, "users", "nitu_progress"), (snap) => {
           if (snap.exists()) {
             window.__isUpdatingFromFirebase = true;
-            set({ ...snap.data(), isHydrated: true });
+            const data = snap.data();
+            
+            // Ensure any newly added tasks appear immediately
+            if (data.dailyTasks && data.dailyTasks.length < DEFAULT_TASKS.length) {
+              const existingIds = data.dailyTasks.map(t => t.id);
+              const missingTasks = DEFAULT_TASKS.filter(t => !existingIds.includes(t.id));
+              data.dailyTasks = [...data.dailyTasks, ...missingTasks];
+            }
+
+            set({ ...data, isHydrated: true });
             // Let the synchronous subscriptions run before unlocking
             setTimeout(() => { window.__isUpdatingFromFirebase = false; }, 10);
           } else {
@@ -127,7 +135,7 @@ export const useStore = create(
           let streakToast = null;
           if (!isDone) {
              get().showToast(`🎉 +${xp} XP! Keep going Nitu!`);
-             if (totalDone >= 4 && !state.streakClaimedToday && state.streak < 15) {
+             if (totalDone >= 2 && !state.streakClaimedToday && state.streak < 15) {
                newStreak = state.streak + 1;
                newStreakClaimed = true;
                streakToast = `🔥 Streak! Day ${newStreak} done!`;

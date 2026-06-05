@@ -19,7 +19,8 @@ export const DEFAULT_TASKS = [
   { id: 'dt_che', subject: 'Chemistry', chapterId: null, pyqs: 0, done: false, xp: 80, name: '🧪 Chemistry Goal' },
   { id: 'dt_bot', subject: 'Botany', chapterId: null, pyqs: 0, done: false, xp: 50, name: '🌿 Botany Goal' },
   { id: 'dt_zoo', subject: 'Zoology', chapterId: null, pyqs: 0, done: false, xp: 50, name: '🦁 Zoology Goal' },
-  { id: 'dt_mock', subject: 'Mock Test', chapterId: null, pyqs: 0, done: false, xp: 150, name: '📝 Full Mock Test' }
+  { id: 'dt_mock', subject: 'Mock Test', chapterId: null, pyqs: 0, done: false, xp: 150, name: '📝 Full Mock Test' },
+  { id: 'dt_fun', subject: 'Self Care', chapterId: null, pyqs: 0, done: false, xp: 50, name: '💖 Spend time doing what you love' }
 ];
 
 export const INITIAL_STATE = {

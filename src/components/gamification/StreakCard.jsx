@@ -28,7 +28,7 @@ export const StreakCard = () => {
   const streakMsg = msgs[Math.max(0, Math.min(streak === 0 ? 0 : streak - 1, 14))];
 
   return (
-    <Card title="🔥 Study Streak" sub="Complete 4+ tasks/day to keep it alive!">
+    <Card title="🔥 Study Streak" sub="Complete 2+ tasks/day to keep it alive!">
       <div className="flex flex-col md:flex-row items-start md:items-center gap-5">
         <div>
           <div className="font-baloo font-extrabold text-[36px] text-coral leading-none">{streak}</div>
