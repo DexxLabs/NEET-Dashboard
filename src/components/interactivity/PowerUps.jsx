@@ -21,6 +21,7 @@ export const PowerUps = () => {
           </div>
         </div>
       ))}
+      </div>
     </Card>
   );
 };
