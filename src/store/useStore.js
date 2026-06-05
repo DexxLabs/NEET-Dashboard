@@ -194,6 +194,23 @@ export const useStore = create(
 
           return { ...partial, badges: badgeUpdates.badges, xp: badgeUpdates.xp };
         });
+      },
+
+      deleteScore: (index) => {
+        set((state) => {
+          const newScores = [...state.scores];
+          newScores.splice(index, 1);
+          return { scores: newScores };
+        });
+      },
+
+      editScore: (index, bio, phy, che) => {
+        set((state) => {
+          const newScores = [...state.scores];
+          const total = Number(bio) + Number(phy) + Number(che);
+          newScores[index] = { ...newScores[index], bio: Number(bio), phy: Number(phy), che: Number(che), total };
+          return { scores: newScores };
+        });
       }
     }),
     {
