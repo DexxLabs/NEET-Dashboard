@@ -18,14 +18,14 @@ export const Badges = () => {
 
   return (
     <Card title="🏆 Badges & Achievements" sub="Collect them all!" className="h-full flex flex-col">
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-2.5 mt-1.5 flex-1">
+      <div className="grid grid-cols-3 md:grid-cols-4 gap-2.5 mt-1.5 flex-1 content-start">
         {BADGE_LIST.map((b) => {
           const unlocked = b.alwaysUnlocked || badges[b.id];
           return (
             <div 
               key={b.id}
               title={b.title}
-              className={`rounded-[14px] px-2.5 py-3.5 text-center border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center ${
+              className={`aspect-square rounded-[14px] px-2.5 py-3.5 text-center border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center ${
                 unlocked 
                   ? 'bg-blue-pale border-blue-light hover:-translate-y-[2px]' 
                   : 'bg-cream-dark border-transparent'
