@@ -32,5 +32,6 @@ export const INITIAL_STATE = {
   toastQueue: [],
   completedChapters: {},
   dailyTasks: [...DEFAULT_TASKS],
-  lastLoginDate: null
+  lastLoginDate: null,
+  streakClaimedToday: false
 };

@@ -70,11 +70,26 @@ export const useStore = create(
         set((state) => {
           const currentLogicalDate = getLogicalDate();
           if (state.lastLoginDate !== currentLogicalDate) {
+            let newStreak = state.streak;
+            
+            // Calculate yesterday's logical date
+            const now = new Date();
+            if (now.getHours() < 3) now.setDate(now.getDate() - 1);
+            now.setDate(now.getDate() - 1); // Yesterday
+            const yesterdayLogicalDate = now.toDateString();
+
+            // If last login wasn't exactly yesterday, OR she logged in yesterday but didn't claim her streak
+            if (state.lastLoginDate && (state.lastLoginDate !== yesterdayLogicalDate || !state.streakClaimedToday)) {
+              newStreak = 0; // Streak broken
+            }
+
             return {
               lastLoginDate: currentLogicalDate,
               doneQuests: {},
               questsDone: 0,
-              dailyTasks: [...DEFAULT_TASKS]
+              dailyTasks: [...DEFAULT_TASKS],
+              streakClaimedToday: false,
+              streak: newStreak
             };
           }
           return state;
@@ -104,6 +119,7 @@ export const useStore = create(
           const isDone = task.done;
           let newXP = isDone ? Math.max(0, state.xp - xp) : state.xp + xp;
           let newStreak = state.streak;
+          let newStreakClaimed = state.streakClaimedToday;
           
           const newTasks = state.dailyTasks.map(t => t.id === id ? { ...t, done: !isDone } : t);
           const totalDone = newTasks.filter(t => t.done).length;
@@ -111,13 +127,14 @@ export const useStore = create(
           let streakToast = null;
           if (!isDone) {
              get().showToast(`🎉 +${xp} XP! Keep going Nitu!`);
-             if (totalDone >= 4 && state.streak < 15) { // simplified streak logic based on total done today
+             if (totalDone >= 4 && !state.streakClaimedToday && state.streak < 15) {
                newStreak = state.streak + 1;
+               newStreakClaimed = true;
                streakToast = `🔥 Streak! Day ${newStreak} done!`;
              }
           }
 
-          const partial = { xp: newXP, streak: newStreak, dailyTasks: newTasks };
+          const partial = { xp: newXP, streak: newStreak, streakClaimedToday: newStreakClaimed, dailyTasks: newTasks };
           const badgeUpdates = checkBadges(state, partial);
           
           if (streakToast) setTimeout(() => get().showToast(streakToast), 1300);
@@ -183,6 +200,7 @@ useStore.subscribe(async (state) => {
       dailyTasks: state.dailyTasks,
       doneQuests: state.doneQuests,
       questsDone: state.questsDone,
+      streakClaimedToday: state.streakClaimedToday,
       lastUpdated: new Date().toISOString()
     };
     

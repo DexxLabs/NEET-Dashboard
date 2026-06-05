@@ -5,7 +5,6 @@ import { getDaysToExam } from '../../utils/dateUtils';
 
 export const StreakCard = () => {
   const streak = useStore((state) => state.streak);
-  const currentDay = Math.max(1, Math.min(15, 15 - getDaysToExam() + 1));
   const days = Array.from({ length: 15 }, (_, i) => i + 1);
 
   const msgs = [
@@ -40,8 +39,6 @@ export const StreakCard = () => {
             let stateClass = '';
             if (day <= streak) {
               stateClass = 'bg-coral border-[#D05830] text-white';
-            } else if (day === currentDay) {
-              stateClass = 'bg-cream-dark border-[#DDD0B8] text-text-muted';
             } else {
               stateClass = 'bg-white border-cream-dark text-cream-dark';
             }
