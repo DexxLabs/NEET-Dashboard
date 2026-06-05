@@ -175,7 +175,6 @@ useStore.subscribe(async (state) => {
   try {
     const dataToSync = {
       xp: state.xp,
-      level: state.level,
       streak: state.streak,
       badges: state.badges,
       completedChapters: state.completedChapters,
