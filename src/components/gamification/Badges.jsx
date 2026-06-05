@@ -17,8 +17,8 @@ export const Badges = () => {
   const badges = useStore((state) => state.badges);
 
   return (
-    <Card title="🏅 Achievements" sub="Unlock badges as you grind! Tap to see what each needs 🔓">
-      <div className="grid grid-cols-3 md:grid-cols-4 gap-2.5 mt-1.5">
+    <Card title="🏆 Badges & Achievements" sub="Collect them all!" className="h-full flex flex-col">
+      <div className="grid grid-cols-3 md:grid-cols-4 gap-2.5 mt-1.5 flex-1">
         {BADGE_LIST.map((b) => {
           const unlocked = b.alwaysUnlocked || badges[b.id];
           return (

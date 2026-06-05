@@ -19,7 +19,7 @@ export const Header = () => {
             Nitu's <span className="text-yellow">NEET Quest</span> ✨
           </div>
           <div className="text-[13px] text-white/65 font-medium mt-[2px]">
-            Score 600+ in {daysRemaining} days · You got this, bestie!
+            Score 600+ in {daysRemaining} days · You got this, guddi!
           </div>
         </div>
       </div>

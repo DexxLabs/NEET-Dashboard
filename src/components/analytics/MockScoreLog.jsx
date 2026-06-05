@@ -11,7 +11,7 @@ export const MockScoreLog = () => {
   const estimatedTarget = Math.min(620, Math.round(470 + daysPassed * 9.5));
 
   return (
-    <Card title="📈 Mock Score History" sub="Watch yourself climb to 600+ 🚀">
+    <Card title="📈 Mock Score History" sub="Watch yourself climb to 600+ 🚀" className="h-full flex flex-col">
       <div className="mt-4 bg-cream-dark rounded-[14px] py-3.5 px-4 flex items-center gap-3">
         <div className="flex-1">
           <div className="text-[13px] font-bold text-text-mid">🎯 Target Score</div>

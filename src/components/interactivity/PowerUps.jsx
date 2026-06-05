@@ -10,7 +10,8 @@ const POWERUPS = [
 
 export const PowerUps = () => {
   return (
-    <Card title="💡 Strategy Power-ups" sub="Nitu's personalized edge — read daily before you start">
+    <Card title="⚡ Power-Ups Shop" sub="Spend XP to unlock perks" className="h-full flex flex-col">
+      <div className="flex flex-col gap-3 flex-1 justify-center">
       {POWERUPS.map((p, idx) => (
         <div key={idx} className="bg-blue-pale rounded-[14px] py-3.5 px-4 mb-2.5 border-l-[4px] border-l-blue-light flex gap-3 items-start">
           <div className="text-[20px] shrink-0">{p.emoji}</div>

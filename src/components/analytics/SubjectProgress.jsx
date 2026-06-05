@@ -56,7 +56,7 @@ export const SubjectProgress = () => {
 
   return (
     <>
-      <Card title="📊 Subject Breakdown" sub="Based on your latest mock score">
+      <Card title="📊 Subject Breakdown" sub="Based on your latest mock score" className="h-full flex flex-col">
         <div className="flex items-center gap-[14px] mb-4">
           <div className="text-[22px] w-9 text-center">🌿</div>
           <div className="flex-1">
