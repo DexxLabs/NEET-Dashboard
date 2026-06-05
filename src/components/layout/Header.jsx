@@ -7,7 +7,7 @@ export const Header = () => {
   const currentDay = Math.max(1, Math.min(totalDays, totalDays - daysRemaining + 1));
 
   return (
-    <header className="bg-blue py-6 px-4 md:px-8 flex flex-col md:flex-row items-start md:items-center justify-between relative overflow-hidden gap-4">
+    <header className="bg-blue py-6 px-4 md:px-16 lg:px-24 xl:px-32 flex flex-col md:flex-row items-start md:items-center justify-between relative overflow-hidden gap-4">
       <div className="absolute w-[300px] h-[300px] bg-white/5 rounded-full -top-[120px] -right-[60px]" />
       
       <div className="flex items-center gap-4">

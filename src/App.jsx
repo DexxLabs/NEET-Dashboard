@@ -70,7 +70,7 @@ function App() {
       <Header />
       <CountdownStrip />
       
-      <main className="w-full px-4 md:px-10 py-6 md:py-10 flex flex-col gap-8 md:gap-12 relative z-10">
+      <main className="w-full px-4 md:px-16 lg:px-24 xl:px-32 py-6 md:py-10 flex flex-col gap-8 md:gap-12 relative z-10">
         <XPCard />
         <StatCard />
         
