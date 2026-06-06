@@ -175,27 +175,24 @@ export const FocusTimer = () => {
 
   return (
     <Card title="🌊 Flow State Timer" sub="Survive 10 mins to enter Flow." className="h-full">
-      <div className="flex flex-col items-center justify-center h-full gap-5 py-2">
+      <div className="flex flex-col items-center justify-start h-full gap-6 pt-6 pb-2">
         
         {/* Custom Duration Input */}
-        {!isRunning ? (
-          <div className="flex items-center gap-2 bg-cream-dark px-4 py-1.5 rounded-full">
-            <span className="text-[12px] font-bold text-text-muted">FOCUS FOR:</span>
-            <input 
-              type="number" 
-              value={customMins}
-              onChange={handleMinsChange}
-              className="w-12 bg-transparent text-coral font-bold text-center border-b-2 border-coral-light focus:outline-none focus:border-coral"
-              min="15" max="180"
-            />
-            <span className="text-[12px] font-bold text-text-muted">MINS</span>
-          </div>
-        ) : (
-          <div className="flex items-center gap-2 bg-cream-dark px-4 py-1.5 rounded-full opacity-0 pointer-events-none">
-            {/* Placeholder to keep layout steady */}
-            <span className="text-[12px]">FOCUS</span>
-          </div>
-        )}
+        <div className="h-8 flex items-center justify-center shrink-0 w-full">
+          {!isRunning && (
+            <div className="flex items-center gap-2 bg-cream-dark px-4 py-1.5 rounded-full">
+              <span className="text-[12px] font-bold text-text-muted">FOCUS FOR:</span>
+              <input 
+                type="number" 
+                value={customMins}
+                onChange={handleMinsChange}
+                className="w-12 bg-transparent text-coral font-bold text-center border-b-2 border-coral-light focus:outline-none focus:border-coral"
+                min="15" max="180"
+              />
+              <span className="text-[12px] font-bold text-text-muted">MINS</span>
+            </div>
+          )}
+        </div>
 
         <div className="flex flex-col items-center justify-center w-full">
           {/* Status Label Above */}
@@ -239,11 +236,11 @@ export const FocusTimer = () => {
               />
             </svg>
             
-            <div className="flex flex-col items-center z-10 mt-1">
-              <div className={`font-baloo font-extrabold text-5xl tracking-wide leading-none ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
+            <div className="flex flex-col items-center z-10 -mt-2">
+              <div className={`font-baloo font-extrabold text-[56px] tracking-wide leading-none ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
                 {formatTime(timeLeft)}
               </div>
-              <div className={`text-[14px] font-bold mt-2 uppercase tracking-widest ${isFlowState ? 'text-yellow-deep' : 'text-coral-light'}`}>
+              <div className={`text-[14px] font-bold mt-1 uppercase tracking-widest ${isFlowState ? 'text-yellow-deep' : 'text-coral-light'}`}>
                 +{Math.floor(earnedXp)} XP
               </div>
             </div>
