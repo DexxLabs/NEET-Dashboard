@@ -5,8 +5,8 @@ import { useStore } from '../../store/useStore';
 export const FocusTimer = () => {
   const addXP = useStore((state) => state.addXP);
 
-  const [customMins, setCustomMins] = useState(25);
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [customMins, setCustomMins] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(60 * 60);
   const [focusSeconds, setFocusSeconds] = useState(0);
   const [earnedXp, setEarnedXp] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -20,13 +20,23 @@ export const FocusTimer = () => {
     if (isRunning && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft((t) => t - 1);
-        setFocusSeconds((f) => f + 1);
+        setFocusSeconds((f) => {
+          const newF = f + 1;
+          if (newF === FOCUS_THRESHOLD) {
+            // Exactly at the 10 min mark, we enter flow state
+            addXP(1, '🎉 Congratulations! You have entered Flow State!');
+          } else if (newF > 0 && newF % 60 === 0) {
+            const inFlow = newF > FOCUS_THRESHOLD;
+            const xpToAdd = inFlow ? 2 : 1;
+            // No message to prevent popup spam
+            addXP(xpToAdd, null);
+          }
+          return newF;
+        });
         setEarnedXp((xp) => xp + (isFlowState ? (2 / 60) : (1 / 60))); // 1 XP/min base, 2 XP/min in flow
       }, 1000);
     } else if (isRunning && timeLeft === 0) {
       setIsRunning(false);
-      const finalXp = Math.floor(earnedXp);
-      addXP(finalXp, `🌊 Flow Session Complete! +${finalXp} XP`);
       setTimeLeft(customMins * 60);
       setFocusSeconds(0);
       setEarnedXp(0);
@@ -97,38 +107,38 @@ export const FocusTimer = () => {
         )}
 
         {/* Timer Display with Dual Rings */}
-        <div className="relative flex items-center justify-center w-[190px] h-[190px]">
+        <div className="relative flex items-center justify-center w-[240px] h-[240px]">
           {/* Outer Ring (Total Time) */}
           <svg className="absolute inset-0 w-full h-full -rotate-90">
-            <circle cx="95" cy="95" r="85" className="stroke-cream-dark" strokeWidth="8" fill="none" />
+            <circle cx="120" cy="120" r="110" className="stroke-cream-dark" strokeWidth="8" fill="none" />
             <circle
-              cx="95" cy="95" r="85"
+              cx="120" cy="120" r="110"
               stroke={themeColor}
               className="transition-all duration-1000 ease-linear"
               strokeWidth="8" fill="none"
-              strokeDasharray="534"
-              strokeDashoffset={534 - (534 * totalPct) / 100}
+              strokeDasharray="691"
+              strokeDashoffset={isFlowState ? (691 - (691 * totalPct) / 100) : 691}
               strokeLinecap="round"
             />
           </svg>
 
           {/* Inner Ring (Flow State Buildup) */}
           <svg className="absolute inset-0 w-full h-full -rotate-90 scale-[0.82]">
-            <circle cx="95" cy="95" r="85" className="stroke-cream-dark opacity-50" strokeWidth="6" fill="none" />
+            <circle cx="120" cy="120" r="110" className="stroke-cream-dark opacity-50" strokeWidth="6" fill="none" />
             <circle
-              cx="95" cy="95" r="85"
+              cx="120" cy="120" r="110"
               stroke={isFlowState ? '#F0A500' : '#FFB5A0'}
               className="transition-all duration-1000 ease-linear"
               strokeWidth="6" fill="none"
-              strokeDasharray="534"
-              strokeDashoffset={534 - (534 * flowPct) / 100}
+              strokeDasharray="691"
+              strokeDashoffset={691 - (691 * flowPct) / 100}
               strokeLinecap="round"
             />
           </svg>
           
           <div className="flex flex-col items-center z-10 mt-1">
             <div className="text-[11px] font-extrabold uppercase tracking-widest text-text-muted mb-0.5">
-              {isFlowState ? '🌊 IN THE ZONE' : '🧱 BUILDING'}
+              {isFlowState ? '🌊 IN FLOW STATE' : '🧱 ENTERING FLOW STATE'}
             </div>
             <div className={`font-baloo font-extrabold text-5xl tracking-wide ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
               {formatTime(timeLeft)}
@@ -155,9 +165,9 @@ export const FocusTimer = () => {
           
           <button
             onClick={handleDistracted}
-            disabled={!isRunning || focusSeconds === 0}
+            disabled={!isRunning}
             className={`w-full py-2 rounded-xl font-bold text-[11px] transition-all border-2 border-cream-dark uppercase ${
-              isRunning && focusSeconds > 0
+              isRunning
                 ? 'text-text-muted hover:bg-cream-dark hover:text-text-dark'
                 : 'opacity-0 pointer-events-none'
             }`}
