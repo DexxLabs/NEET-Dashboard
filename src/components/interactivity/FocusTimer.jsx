@@ -74,46 +74,8 @@ export const FocusTimer = () => {
     return () => clearInterval(interval);
   }, [isRunning, timeLeft, focusSeconds, isFlowState, earnedXp, customMins, addXP]);
 
-  // Handle visibility change (tab switching)
+  // Handle auto-floating when scrolling out of view
   useEffect(() => {
-    const onBeforeUnload = () => {
-      window.__isRefreshing = true;
-    };
-    window.addEventListener("beforeunload", onBeforeUnload);
-
-    const handleVisibility = () => {
-      if (document.hidden && isRunning && !window.__isRefreshing) {
-        setIsRunning(false);
-        if (focusSeconds < FOCUS_THRESHOLD) {
-          setFocusSeconds(0);
-          // Show toast that progress was lost
-          const showToast = useStore.getState().showToast;
-          showToast("🚨 You left the screen! Warmup progress reset.");
-        } else {
-          const showToast = useStore.getState().showToast;
-          showToast("⏸️ You left the screen! Timer paused.");
-        }
-      }
-    };
-    
-    // Also listen to blur for switching apps/windows
-    const handleBlur = () => {
-      if (isRunning && !window.__isRefreshing) {
-        setIsRunning(false);
-        if (focusSeconds < FOCUS_THRESHOLD) {
-          setFocusSeconds(0);
-          const showToast = useStore.getState().showToast;
-          showToast("🚨 You lost focus! Warmup progress reset.");
-        } else {
-          const showToast = useStore.getState().showToast;
-          showToast("⏸️ You lost focus! Timer paused.");
-        }
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibility);
-    window.addEventListener("blur", handleBlur);
-    
     const observer = new IntersectionObserver(
       ([entry]) => {
         setIsAutoFloating(!entry.isIntersecting);
@@ -126,12 +88,9 @@ export const FocusTimer = () => {
     }
     
     return () => {
-      window.removeEventListener("beforeunload", onBeforeUnload);
-      document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("blur", handleBlur);
       observer.disconnect();
     };
-  }, [isRunning, focusSeconds]);
+  }, []);
 
   const toggleTimer = () => {
     if (!isRunning && timeLeft === 0) {
