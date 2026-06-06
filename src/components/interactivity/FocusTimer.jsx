@@ -199,8 +199,14 @@ export const FocusTimer = () => {
 
         <div className="flex flex-col items-center justify-center w-full">
           {/* Status Label Above */}
-          <div className={`text-[13px] font-extrabold uppercase tracking-widest mb-4 ${isFlowState ? 'text-blue-light' : 'text-text-muted'}`}>
-            {isFlowState ? '🌊 IN FLOW STATE' : '🧱 ENTERING FLOW STATE'}
+          <div className={`text-[13px] font-extrabold uppercase tracking-widest h-5 mb-3 transition-opacity ${isRunning || (timeLeft < customMins * 60 && timeLeft > 0) ? 'opacity-100' : 'opacity-0'} ${isFlowState ? 'text-blue-light' : 'text-text-muted'}`}>
+            {isRunning ? (
+              isFlowState ? '🌊 IN FLOW STATE' : '🧱 ENTERING FLOW STATE'
+            ) : (timeLeft < customMins * 60 && timeLeft > 0) ? (
+              '⏸️ Start Timer to continue'
+            ) : (
+              ' '
+            )}
           </div>
 
           {/* Timer Display with Dual Rings */}
@@ -234,7 +240,7 @@ export const FocusTimer = () => {
             </svg>
             
             <div className="flex flex-col items-center z-10 mt-1">
-              <div className={`font-baloo font-extrabold text-[64px] tracking-wide leading-none ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
+              <div className={`font-baloo font-extrabold text-5xl tracking-wide leading-none ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
                 {formatTime(timeLeft)}
               </div>
               <div className={`text-[14px] font-bold mt-2 uppercase tracking-widest ${isFlowState ? 'text-yellow-deep' : 'text-coral-light'}`}>
