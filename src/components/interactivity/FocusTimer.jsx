@@ -5,11 +5,35 @@ import { useStore } from '../../store/useStore';
 export const FocusTimer = () => {
   const addXP = useStore((state) => state.addXP);
 
-  const [customMins, setCustomMins] = useState(60);
-  const [timeLeft, setTimeLeft] = useState(60 * 60);
-  const [focusSeconds, setFocusSeconds] = useState(0);
-  const [earnedXp, setEarnedXp] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
+  const loadState = () => {
+    try {
+      const saved = localStorage.getItem('focusTimerState');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  };
+
+  const [customMins, setCustomMins] = useState(() => {
+    const s = loadState(); return s ? s.customMins : 60;
+  });
+  const [timeLeft, setTimeLeft] = useState(() => {
+    const s = loadState(); return s ? s.timeLeft : 60 * 60;
+  });
+  const [focusSeconds, setFocusSeconds] = useState(() => {
+    const s = loadState(); return s ? s.focusSeconds : 0;
+  });
+  const [earnedXp, setEarnedXp] = useState(() => {
+    const s = loadState(); return s ? s.earnedXp : 0;
+  });
+  const [isRunning, setIsRunning] = useState(() => {
+    const s = loadState(); return s ? s.isRunning : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('focusTimerState', JSON.stringify({
+      customMins, timeLeft, focusSeconds, earnedXp, isRunning
+    }));
+  }, [customMins, timeLeft, focusSeconds, earnedXp, isRunning]);
 
   // Constants
   const FOCUS_THRESHOLD = 600; // 10 minutes to reach Flow State
@@ -44,13 +68,80 @@ export const FocusTimer = () => {
     return () => clearInterval(interval);
   }, [isRunning, timeLeft, focusSeconds, isFlowState, earnedXp, customMins, addXP]);
 
+  // Handle visibility change (tab switching)
+  useEffect(() => {
+    const onBeforeUnload = () => {
+      window.__isRefreshing = true;
+    };
+    window.addEventListener("beforeunload", onBeforeUnload);
+
+    const handleVisibility = () => {
+      if (document.hidden && isRunning && !window.__isRefreshing) {
+        setIsRunning(false);
+        if (focusSeconds < FOCUS_THRESHOLD) {
+          setFocusSeconds(0);
+          // Show toast that progress was lost
+          const showToast = useStore.getState().showToast;
+          showToast("🚨 You left the screen! Warmup progress reset.");
+        } else {
+          const showToast = useStore.getState().showToast;
+          showToast("⏸️ You left the screen! Timer paused.");
+        }
+      }
+    };
+    
+    // Also listen to blur for switching apps/windows
+    const handleBlur = () => {
+      if (isRunning && !window.__isRefreshing) {
+        setIsRunning(false);
+        if (focusSeconds < FOCUS_THRESHOLD) {
+          setFocusSeconds(0);
+          const showToast = useStore.getState().showToast;
+          showToast("🚨 You lost focus! Warmup progress reset.");
+        } else {
+          const showToast = useStore.getState().showToast;
+          showToast("⏸️ You lost focus! Timer paused.");
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("blur", handleBlur);
+    
+    return () => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, [isRunning, focusSeconds]);
+
   const toggleTimer = () => {
     if (!isRunning && timeLeft === 0) {
       setTimeLeft(customMins * 60);
       setFocusSeconds(0);
       setEarnedXp(0);
+      setIsRunning(true);
+    } else if (isRunning) {
+      if (!isFlowState) {
+        if (window.confirm("Pausing now will reset your Flow State progress! Are you sure?")) {
+          setIsRunning(false);
+          setFocusSeconds(0);
+        }
+      } else {
+        setIsRunning(false);
+      }
+    } else {
+      setIsRunning(true);
     }
-    setIsRunning(!isRunning);
+  };
+
+  const handleReset = () => {
+    if (window.confirm("Are you sure you want to reset the timer?")) {
+      setIsRunning(false);
+      setTimeLeft(customMins * 60);
+      setFocusSeconds(0);
+      setEarnedXp(0);
+    }
   };
 
   const handleDistracted = () => {
@@ -106,62 +197,75 @@ export const FocusTimer = () => {
           </div>
         )}
 
-        {/* Timer Display with Dual Rings */}
-        <div className="relative flex items-center justify-center w-[240px] h-[240px]">
-          {/* Outer Ring (Total Time) */}
-          <svg className="absolute inset-0 w-full h-full -rotate-90">
-            <circle cx="120" cy="120" r="110" className="stroke-cream-dark" strokeWidth="8" fill="none" />
-            <circle
-              cx="120" cy="120" r="110"
-              stroke={themeColor}
-              className="transition-all duration-1000 ease-linear"
-              strokeWidth="8" fill="none"
-              strokeDasharray="691"
-              strokeDashoffset={isFlowState ? (691 - (691 * totalPct) / 100) : 691}
-              strokeLinecap="round"
-            />
-          </svg>
+        <div className="flex flex-col items-center justify-center w-full">
+          {/* Status Label Above */}
+          <div className={`text-[13px] font-extrabold uppercase tracking-widest mb-4 ${isFlowState ? 'text-blue-light' : 'text-text-muted'}`}>
+            {isFlowState ? '🌊 IN FLOW STATE' : '🧱 ENTERING FLOW STATE'}
+          </div>
 
-          {/* Inner Ring (Flow State Buildup) */}
-          <svg className="absolute inset-0 w-full h-full -rotate-90 scale-[0.82]">
-            <circle cx="120" cy="120" r="110" className="stroke-cream-dark opacity-50" strokeWidth="6" fill="none" />
-            <circle
-              cx="120" cy="120" r="110"
-              stroke={isFlowState ? '#F0A500' : '#FFB5A0'}
-              className="transition-all duration-1000 ease-linear"
-              strokeWidth="6" fill="none"
-              strokeDasharray="691"
-              strokeDashoffset={691 - (691 * flowPct) / 100}
-              strokeLinecap="round"
-            />
-          </svg>
-          
-          <div className="flex flex-col items-center z-10 mt-1">
-            <div className="text-[11px] font-extrabold uppercase tracking-widest text-text-muted mb-0.5">
-              {isFlowState ? '🌊 IN FLOW STATE' : '🧱 ENTERING FLOW STATE'}
-            </div>
-            <div className={`font-baloo font-extrabold text-5xl tracking-wide ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
-              {formatTime(timeLeft)}
-            </div>
-            <div className={`text-[12px] font-bold mt-0.5 uppercase tracking-widest ${isFlowState ? 'text-yellow-deep' : 'text-coral-light'}`}>
-              +{Math.floor(earnedXp)} XP
+          {/* Timer Display with Dual Rings */}
+          <div className="relative flex items-center justify-center w-[240px] h-[240px]">
+            {/* Outer Ring (Total Time) */}
+            <svg className="absolute inset-0 w-full h-full -rotate-90">
+              <circle cx="120" cy="120" r="110" className="stroke-cream-dark" strokeWidth="8" fill="none" />
+              <circle
+                cx="120" cy="120" r="110"
+                stroke={themeColor}
+                className="transition-all duration-1000 ease-linear"
+                strokeWidth="8" fill="none"
+                strokeDasharray="691"
+                strokeDashoffset={isFlowState ? (691 - (691 * totalPct) / 100) : 691}
+                strokeLinecap="round"
+              />
+            </svg>
+
+            {/* Inner Ring (Flow State Buildup) */}
+            <svg className="absolute inset-0 w-full h-full -rotate-90 scale-[0.82]">
+              <circle cx="120" cy="120" r="110" className="stroke-cream-dark opacity-50" strokeWidth="6" fill="none" />
+              <circle
+                cx="120" cy="120" r="110"
+                stroke={isFlowState ? '#F0A500' : '#FFB5A0'}
+                className="transition-all duration-1000 ease-linear"
+                strokeWidth="6" fill="none"
+                strokeDasharray="691"
+                strokeDashoffset={691 - (691 * flowPct) / 100}
+                strokeLinecap="round"
+              />
+            </svg>
+            
+            <div className="flex flex-col items-center z-10 mt-1">
+              <div className={`font-baloo font-extrabold text-[64px] tracking-wide leading-none ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
+                {formatTime(timeLeft)}
+              </div>
+              <div className={`text-[14px] font-bold mt-2 uppercase tracking-widest ${isFlowState ? 'text-yellow-deep' : 'text-coral-light'}`}>
+                +{Math.floor(earnedXp)} XP
+              </div>
             </div>
           </div>
         </div>
 
         {/* Controls */}
-        <div className="flex flex-col gap-2 w-full max-w-[220px]">
-          <button
-            onClick={toggleTimer}
-            style={{ 
-              backgroundColor: isRunning ? themeBg : themeColor,
-              color: isRunning ? themeColor : '#fff',
-              borderColor: isRunning ? themeColor : themeColor,
-            }}
-            className={`w-full py-3 rounded-xl font-bold text-[14px] transition-all border-2 ${!isRunning && 'shadow-[0_4px_0_#A03D20] active:translate-y-[4px] active:shadow-none hover:opacity-90'}`}
-          >
-            {isRunning ? 'PAUSE' : 'START FOCUS'}
-          </button>
+        <div className="flex flex-col gap-2 w-full max-w-[240px] mt-2">
+          <div className="flex gap-2 w-full">
+            <button
+              onClick={toggleTimer}
+              style={{ 
+                backgroundColor: isRunning ? themeBg : themeColor,
+                color: isRunning ? themeColor : '#fff',
+                borderColor: isRunning ? themeColor : themeColor,
+              }}
+              className={`flex-1 py-3 rounded-xl font-bold text-[14px] transition-all border-2 ${!isRunning && 'shadow-[0_4px_0_#A03D20] active:translate-y-[4px] active:shadow-none hover:opacity-90'}`}
+            >
+              {isRunning ? 'PAUSE' : 'START FOCUS'}
+            </button>
+            
+            <button
+              onClick={handleReset}
+              className="px-5 py-3 rounded-xl font-bold text-[14px] transition-all border-2 border-cream-dark text-text-muted hover:bg-cream-dark hover:text-text-dark"
+            >
+              RESET
+            </button>
+          </div>
           
           <button
             onClick={handleDistracted}

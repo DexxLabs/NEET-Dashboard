@@ -17,6 +17,7 @@ describe('FocusTimer Component', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     mockAddXP.mockClear();
+    localStorage.clear();
     // Reset confirm dialog
     window.confirm = vi.fn(() => true);
   });
