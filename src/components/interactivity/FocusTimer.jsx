@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/Card';
 import { useStore } from '../../store/useStore';
 
@@ -28,6 +28,12 @@ export const FocusTimer = () => {
   const [isRunning, setIsRunning] = useState(() => {
     const s = loadState(); return s ? s.isRunning : false;
   });
+
+  const [isManualFloating, setIsManualFloating] = useState(false);
+  const [isAutoFloating, setIsAutoFloating] = useState(false);
+  const containerRef = useRef(null);
+
+  const isFloating = isManualFloating || isAutoFloating;
 
   useEffect(() => {
     localStorage.setItem('focusTimerState', JSON.stringify({
@@ -108,10 +114,22 @@ export const FocusTimer = () => {
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("blur", handleBlur);
     
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAutoFloating(!entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    
     return () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("blur", handleBlur);
+      observer.disconnect();
     };
   }, [isRunning, focusSeconds]);
 
@@ -175,11 +193,19 @@ export const FocusTimer = () => {
 
   return (
     <Card title="🌊 Flow State Timer" sub="Survive 10 mins to enter Flow." className="h-full">
-      <div className="flex flex-col items-center justify-start h-full gap-6 pt-6 pb-2">
+      <div ref={containerRef} className="flex flex-col items-center justify-start h-full gap-6 pt-6 pb-2">
         
         {/* Custom Duration Input */}
-        <div className="h-8 flex items-center justify-center shrink-0 w-full">
-          {!isRunning && (
+        <div className="h-8 flex items-center justify-center shrink-0 w-full relative">
+          <button 
+            onClick={() => setIsManualFloating(!isManualFloating)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 text-text-muted hover:text-text-dark transition-colors bg-cream-dark rounded-md"
+            title="Toggle compact floating timer"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><line x1="9" y1="15" x2="21" y2="3"/><polyline points="9 21 3 21 3 15"/><line x1="15" y1="9" x2="3" y2="21"/></svg>
+          </button>
+
+          {!isRunning ? (
             <div className="flex items-center gap-2 bg-cream-dark px-4 py-1.5 rounded-full">
               <span className="text-[12px] font-bold text-text-muted">FOCUS FOR:</span>
               <input 
@@ -189,6 +215,12 @@ export const FocusTimer = () => {
                 className="w-12 bg-transparent text-coral font-bold text-center border-b-2 border-coral-light focus:outline-none focus:border-coral"
                 min="15" max="180"
               />
+              <span className="text-[12px] font-bold text-text-muted">MINS</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 bg-cream-dark px-4 py-1.5 rounded-full">
+              <span className="text-[12px] font-bold text-text-muted">FOCUSING FOR:</span>
+              <span className="text-[13px] text-coral font-bold">{customMins}</span>
               <span className="text-[12px] font-bold text-text-muted">MINS</span>
             </div>
           )}
@@ -284,6 +316,40 @@ export const FocusTimer = () => {
         </div>
 
       </div>
+
+      {/* Floating Pill Widget */}
+      {isFloating && (
+        <div className="fixed bottom-6 right-6 z-50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full animate-in fade-in slide-in-from-bottom-5 duration-300">
+          <div 
+            onClick={() => {
+               window.scrollTo({ top: 0, behavior: 'smooth' });
+               setIsManualFloating(false);
+            }}
+            className="flex items-center gap-4 bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-full border-2 border-cream-dark cursor-pointer transition-all hover:scale-[1.02] active:scale-95"
+            title="Click to return to main timer"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-xl">{isFlowState ? '🌊' : '🧱'}</span>
+              <span className={`font-baloo font-extrabold text-2xl tracking-wide leading-none pt-0.5 ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
+                {formatTime(timeLeft)}
+              </span>
+            </div>
+            
+            <div className="w-px h-6 bg-cream-dark mx-1"></div>
+
+            <button 
+              onClick={(e) => { e.stopPropagation(); toggleTimer(); }}
+              className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${isRunning ? 'bg-cream-dark text-text-muted hover:bg-coral-pale hover:text-coral' : 'bg-coral text-white shadow-md hover:bg-[#E07652]'}`}
+            >
+              {isRunning ? (
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="ml-0.5"><path d="M5 3v18l15-9L5 3z"/></svg>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </Card>
   );
 };
