@@ -45,34 +45,88 @@ export const FocusTimer = () => {
   const FOCUS_THRESHOLD = 600; // 10 minutes to reach Flow State
   const isFlowState = focusSeconds >= FOCUS_THRESHOLD;
 
+  const stateRef = useRef({ timeLeft, focusSeconds, earnedXp });
+  useEffect(() => {
+    stateRef.current = { timeLeft, focusSeconds, earnedXp };
+  }, [timeLeft, focusSeconds, earnedXp]);
+
+  const lastTickRef = useRef(Date.now());
+
   useEffect(() => {
     let interval;
-    if (isRunning && timeLeft > 0) {
+    if (isRunning) {
+      lastTickRef.current = Date.now();
+      
       interval = setInterval(() => {
-        setTimeLeft((t) => t - 1);
-        setFocusSeconds((f) => {
-          const newF = f + 1;
-          if (newF === FOCUS_THRESHOLD) {
-            // Exactly at the 10 min mark, we enter flow state
-            addXP(1, '🎉 Congratulations! You have entered Flow State!');
-          } else if (newF > 0 && newF % 60 === 0) {
-            const inFlow = newF > FOCUS_THRESHOLD;
-            const xpToAdd = inFlow ? 2 : 1;
-            // No message to prevent popup spam
-            addXP(xpToAdd, null);
+        const now = Date.now();
+        const deltaMs = now - lastTickRef.current;
+        const deltaSeconds = Math.floor(deltaMs / 1000);
+
+        if (deltaSeconds >= 1) {
+          lastTickRef.current = now - (deltaMs % 1000);
+          
+          const current = stateRef.current;
+          if (current.timeLeft <= 0) {
+             setIsRunning(false);
+             setTimeLeft(customMins * 60);
+             setFocusSeconds(0);
+             setEarnedXp(0);
+             return;
           }
-          return newF;
-        });
-        setEarnedXp((xp) => xp + (isFlowState ? (2 / 60) : (1 / 60))); // 1 XP/min base, 2 XP/min in flow
-      }, 1000);
-    } else if (isRunning && timeLeft === 0) {
-      setIsRunning(false);
-      setTimeLeft(customMins * 60);
-      setFocusSeconds(0);
-      setEarnedXp(0);
+
+          const actualDelta = Math.min(deltaSeconds, current.timeLeft);
+          let newF = current.focusSeconds;
+          let addedXp = 0;
+          let silentXpToAdd = 0;
+          let newlyReachedFlow = false;
+
+          for (let i = 0; i < actualDelta; i++) {
+            newF += 1;
+            if (newF === FOCUS_THRESHOLD) {
+              newlyReachedFlow = true;
+              silentXpToAdd += 1;
+            } else if (newF > 0 && newF % 60 === 0) {
+              silentXpToAdd += (newF > FOCUS_THRESHOLD ? 2 : 1);
+            }
+            addedXp += (newF > FOCUS_THRESHOLD ? (2 / 60) : (1 / 60));
+          }
+
+          if (newlyReachedFlow) {
+            addXP(silentXpToAdd, '🎉 Congratulations! You have entered Flow State!');
+          } else if (silentXpToAdd > 0) {
+            addXP(silentXpToAdd, null);
+          }
+
+          const newTimeLeft = current.timeLeft - actualDelta;
+          const newEarnedXp = current.earnedXp + addedXp;
+          
+          // Update ref synchronously for tests and fast interval executions
+          stateRef.current = {
+            timeLeft: newTimeLeft === 0 ? customMins * 60 : newTimeLeft,
+            focusSeconds: newTimeLeft === 0 ? 0 : newF,
+            earnedXp: newTimeLeft === 0 ? 0 : newEarnedXp
+          };
+
+          setTimeLeft(newTimeLeft);
+          setFocusSeconds(newF);
+          setEarnedXp(newEarnedXp);
+
+          if (newTimeLeft === 0) {
+             setIsRunning(false);
+             setTimeLeft(customMins * 60);
+             setFocusSeconds(0);
+             setEarnedXp(0);
+          }
+        }
+      }, 500);
+    } else if (!isRunning && stateRef.current.timeLeft === 0) {
+       // Just in case it's not running and time is 0
+       setTimeLeft(customMins * 60);
+       setFocusSeconds(0);
+       setEarnedXp(0);
     }
     return () => clearInterval(interval);
-  }, [isRunning, timeLeft, focusSeconds, isFlowState, earnedXp, customMins, addXP]);
+  }, [isRunning, customMins, addXP]);
 
   // Handle auto-floating when scrolling out of view
   useEffect(() => {
