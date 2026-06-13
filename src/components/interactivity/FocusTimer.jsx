@@ -36,7 +36,7 @@ export const FocusTimer = () => {
   const [confirmModal, setConfirmModal] = useState(null);
   const containerRef = useRef(null);
 
-  const isFloating = isManualFloating || isAutoFloating;
+  const isFloating = isManualFloating || (isAutoFloating && isRunning);
 
   useEffect(() => {
     localStorage.setItem('focusTimerState', JSON.stringify({
