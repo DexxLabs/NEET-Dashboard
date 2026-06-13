@@ -13,19 +13,26 @@ export const Toast = () => {
     if (toastQueue.length > 0 && !currentToast) {
       setCurrentToast(toastQueue[0]);
       setShow(true);
-      
+    }
+  }, [toastQueue, currentToast]);
+
+  useEffect(() => {
+    let nextTimer;
+    if (currentToast) {
       const hideTimer = setTimeout(() => {
         setShow(false);
-        const nextTimer = setTimeout(() => {
+        nextTimer = setTimeout(() => {
           setCurrentToast(null);
           popToast();
         }, 400);
-        return () => clearTimeout(nextTimer);
-      }, 2600);
+      }, 2000);
       
-      return () => clearTimeout(hideTimer);
+      return () => {
+        clearTimeout(hideTimer);
+        if (nextTimer) clearTimeout(nextTimer);
+      };
     }
-  }, [toastQueue, currentToast, popToast]);
+  }, [currentToast, popToast]);
 
   return (
     <div 
