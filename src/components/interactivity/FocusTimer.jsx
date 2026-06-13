@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/Card';
 import { useStore } from '../../store/useStore';
+import { useTheme } from '../../store/useTheme';
 
 export const FocusTimer = () => {
   const addXP = useStore((state) => state.addXP);
+  const theme = useTheme((state) => state.theme);
 
   const loadState = () => {
     try {
@@ -31,6 +33,7 @@ export const FocusTimer = () => {
 
   const [isManualFloating, setIsManualFloating] = useState(false);
   const [isAutoFloating, setIsAutoFloating] = useState(false);
+  const [confirmModal, setConfirmModal] = useState(null);
   const containerRef = useRef(null);
 
   const isFloating = isManualFloating || isAutoFloating;
@@ -154,10 +157,15 @@ export const FocusTimer = () => {
       setIsRunning(true);
     } else if (isRunning) {
       if (!isFlowState) {
-        if (window.confirm("Pausing now will reset your Flow State progress! Are you sure?")) {
-          setIsRunning(false);
-          setFocusSeconds(0);
-        }
+        setConfirmModal({
+          message: "Pausing now will reset your Flow State progress! Are you sure?",
+          emoji: "⏸️",
+          onConfirm: () => {
+            setIsRunning(false);
+            setFocusSeconds(0);
+            setConfirmModal(null);
+          }
+        });
       } else {
         setIsRunning(false);
       }
@@ -167,18 +175,28 @@ export const FocusTimer = () => {
   };
 
   const handleReset = () => {
-    if (window.confirm("Are you sure you want to reset the timer?")) {
-      setIsRunning(false);
-      setTimeLeft(customMins * 60);
-      setFocusSeconds(0);
-      setEarnedXp(0);
-    }
+    setConfirmModal({
+      message: "Are you sure you want to reset the timer?",
+      emoji: "🔄",
+      onConfirm: () => {
+        setIsRunning(false);
+        setTimeLeft(customMins * 60);
+        setFocusSeconds(0);
+        setEarnedXp(0);
+        setConfirmModal(null);
+      }
+    });
   };
 
   const handleDistracted = () => {
-    if (window.confirm("Checking your phone? This will reset your Flow State buildup!")) {
-      setFocusSeconds(0);
-    }
+    setConfirmModal({
+      message: "Checking your phone? This will reset your Flow State buildup!",
+      emoji: "📱",
+      onConfirm: () => {
+        setFocusSeconds(0);
+        setConfirmModal(null);
+      }
+    });
   };
 
   const handleMinsChange = (e) => {
@@ -201,10 +219,11 @@ export const FocusTimer = () => {
   const totalPct = 100 - ((timeLeft / (customMins * 60)) * 100);
   const flowPct = Math.min(100, (focusSeconds / FOCUS_THRESHOLD) * 100);
 
-  const themeColor = isFlowState ? '#3D5FC7' : '#F78660'; // blue-light vs coral
-  const themeBg = isFlowState ? '#E6EEFF' : '#FFF0EC'; // blue-pale vs coral-pale
+  const themeColor = theme === 'kawaii' ? (isFlowState ? '#7DDFC3' : '#F4B8C1') : (isFlowState ? '#3D5FC7' : '#F78660'); // blue-light vs coral
+  const themeBg = theme === 'kawaii' ? (isFlowState ? '#E6FFF5' : '#FDE8E8') : (isFlowState ? '#E6EEFF' : '#FFF0EC'); // blue-pale vs coral-pale
 
   return (
+    <>
     <Card title="🌊 Flow State Timer" sub="Survive 10 mins to enter Flow." className="h-full">
       <div ref={containerRef} className="flex flex-col items-center justify-start h-full gap-6 pt-6 pb-2">
         
@@ -212,36 +231,36 @@ export const FocusTimer = () => {
         <div className="h-8 flex items-center justify-center shrink-0 w-full relative">
           <button 
             onClick={() => setIsManualFloating(!isManualFloating)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-1.5 text-text-muted hover:text-text-dark transition-colors bg-cream-dark rounded-md"
+            className={`absolute right-4 top-1/2 -translate-y-1/2 p-1.5 transition-colors ${theme === 'kawaii' ? 'text-[#5A3A3A] bg-white border border-[#F4B8C1] shadow-[1px_1px_0_#F4B8C1] rounded-none hover:opacity-70' : 'text-text-muted hover:text-text-dark bg-cream-dark rounded-md'}`}
             title="Toggle compact floating timer"
           >
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 3 21 3 21 9"/><line x1="9" y1="15" x2="21" y2="3"/><polyline points="9 21 3 21 3 15"/><line x1="15" y1="9" x2="3" y2="21"/></svg>
           </button>
 
           {!isRunning ? (
-            <div className="flex items-center gap-2 bg-cream-dark px-4 py-1.5 rounded-full">
-              <span className="text-[12px] font-bold text-text-muted">FOCUS FOR:</span>
+            <div className={`flex items-center gap-2 px-4 py-1.5 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border border-[#F4B8C1] rounded-none font-sans' : 'bg-cream-dark rounded-full'}`}>
+              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : 'text-text-muted'}`}>FOCUS FOR:</span>
               <input 
                 type="number" 
                 value={customMins}
                 onChange={handleMinsChange}
-                className="w-12 bg-transparent text-coral font-bold text-center border-b-2 border-coral-light focus:outline-none focus:border-coral"
+                className={`w-12 bg-transparent font-bold text-center border-b-2 focus:outline-none ${theme === 'kawaii' ? 'text-[#5A3A3A] border-[#F4B8C1] focus:border-[#5A3A3A]' : 'text-coral border-coral-light focus:border-coral'}`}
                 min="15" max="180"
               />
-              <span className="text-[12px] font-bold text-text-muted">MINS</span>
+              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : 'text-text-muted'}`}>MINS</span>
             </div>
           ) : (
-            <div className="flex items-center gap-2 bg-cream-dark px-4 py-1.5 rounded-full">
-              <span className="text-[12px] font-bold text-text-muted">FOCUSING FOR:</span>
-              <span className="text-[13px] text-coral font-bold">{customMins}</span>
-              <span className="text-[12px] font-bold text-text-muted">MINS</span>
+            <div className={`flex items-center gap-2 px-4 py-1.5 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border border-[#F4B8C1] rounded-none font-sans' : 'bg-cream-dark rounded-full'}`}>
+              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : 'text-text-muted'}`}>FOCUSING FOR:</span>
+              <span className={`text-[13px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A]' : 'text-coral'}`}>{customMins}</span>
+              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : 'text-text-muted'}`}>MINS</span>
             </div>
           )}
         </div>
 
         <div className="flex flex-col items-center justify-center w-full">
           {/* Status Label Above */}
-          <div className={`text-[13px] font-extrabold uppercase tracking-widest h-5 mb-3 transition-opacity ${isRunning || (timeLeft < customMins * 60 && timeLeft > 0) ? 'opacity-100' : 'opacity-0'} ${isFlowState ? 'text-blue-light' : 'text-text-muted'}`}>
+          <div className={`text-[13px] font-extrabold uppercase tracking-widest h-5 mb-3 transition-opacity ${isRunning || (timeLeft < customMins * 60 && timeLeft > 0) ? 'opacity-100' : 'opacity-0'} ${theme === 'kawaii' ? (isFlowState ? 'text-[#7DDFC3] font-sans' : 'text-[#5A3A3A] font-sans') : (isFlowState ? 'text-blue-light' : 'text-text-muted')}`}>
             {isRunning ? (
               isFlowState ? '🌊 IN FLOW STATE' : '🧱 ENTERING FLOW STATE'
             ) : (timeLeft < customMins * 60 && timeLeft > 0) ? (
@@ -255,7 +274,7 @@ export const FocusTimer = () => {
           <div className="relative flex items-center justify-center w-[240px] h-[240px]">
             {/* Outer Ring (Total Time) */}
             <svg className="absolute inset-0 w-full h-full -rotate-90">
-              <circle cx="120" cy="120" r="110" className="stroke-cream-dark" strokeWidth="8" fill="none" />
+              <circle cx="120" cy="120" r="110" className={`stroke-cream-dark ${theme === 'kawaii' ? 'stroke-[#FDE8E8]' : ''}`} strokeWidth="8" fill="none" />
               <circle
                 cx="120" cy="120" r="110"
                 stroke={themeColor}
@@ -269,10 +288,10 @@ export const FocusTimer = () => {
 
             {/* Inner Ring (Flow State Buildup) */}
             <svg className="absolute inset-0 w-full h-full -rotate-90 scale-[0.82]">
-              <circle cx="120" cy="120" r="110" className="stroke-cream-dark opacity-50" strokeWidth="6" fill="none" />
+              <circle cx="120" cy="120" r="110" className={`stroke-cream-dark opacity-50 ${theme === 'kawaii' ? 'stroke-[#FDE8E8]' : ''}`} strokeWidth="6" fill="none" />
               <circle
                 cx="120" cy="120" r="110"
-                stroke={isFlowState ? '#F0A500' : '#FFB5A0'}
+                stroke={theme === 'kawaii' ? (isFlowState ? '#7DDFC3' : '#F4B8C1') : (isFlowState ? '#F0A500' : '#FFB5A0')}
                 className="transition-all duration-1000 ease-linear"
                 strokeWidth="6" fill="none"
                 strokeDasharray="691"
@@ -282,10 +301,10 @@ export const FocusTimer = () => {
             </svg>
             
             <div className="flex flex-col items-center z-10 -mt-2">
-              <div className={`font-baloo font-extrabold text-[56px] tracking-wide leading-none ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
+              <div className={`font-extrabold text-[56px] tracking-wide leading-none ${theme === 'kawaii' ? 'font-sans text-[#5A3A3A]' : `font-baloo ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}`}>
                 {formatTime(timeLeft)}
               </div>
-              <div className={`text-[14px] font-bold mt-1 uppercase tracking-widest ${isFlowState ? 'text-yellow-deep' : 'text-coral-light'}`}>
+              <div className={`text-[14px] font-bold mt-1 uppercase tracking-widest ${theme === 'kawaii' ? 'text-[#7DDFC3] font-sans' : (isFlowState ? 'text-yellow-deep' : 'text-coral-light')}`}>
                 +{Math.floor(earnedXp)} XP
               </div>
             </div>
@@ -299,17 +318,17 @@ export const FocusTimer = () => {
               onClick={toggleTimer}
               style={{ 
                 backgroundColor: isRunning ? themeBg : themeColor,
-                color: isRunning ? themeColor : '#fff',
-                borderColor: isRunning ? themeColor : themeColor,
+                color: theme === 'kawaii' ? '#5A3A3A' : (isRunning ? themeColor : '#fff'),
+                borderColor: theme === 'kawaii' ? '#5A3A3A' : themeColor,
               }}
-              className={`flex-1 py-3 rounded-xl font-bold text-[14px] transition-all border-2 ${!isRunning && 'shadow-[0_4px_0_#A03D20] active:translate-y-[4px] active:shadow-none hover:opacity-90'}`}
+              className={`flex-1 py-3 font-bold text-[14px] transition-all border-2 ${theme === 'kawaii' ? 'rounded-none font-sans active:translate-y-[2px]' : `rounded-xl ${!isRunning && 'shadow-[0_4px_0_#A03D20] active:translate-y-[4px] active:shadow-none hover:opacity-90'}`} ${theme === 'kawaii' && !isRunning && 'shadow-[2px_2px_0_#5A3A3A] active:shadow-none'}`}
             >
               {isRunning ? 'PAUSE' : 'START FOCUS'}
             </button>
             
             <button
               onClick={handleReset}
-              className="px-5 py-3 rounded-xl font-bold text-[14px] transition-all border-2 border-cream-dark text-text-muted hover:bg-cream-dark hover:text-text-dark"
+              className={`px-5 py-3 font-bold text-[14px] transition-all border-2 ${theme === 'kawaii' ? 'bg-white border-[#5A3A3A] text-[#5A3A3A] font-sans rounded-none shadow-[2px_2px_0_rgba(90,58,58,0.2)] active:translate-y-[2px] active:shadow-none' : 'rounded-xl border-cream-dark text-text-muted hover:bg-cream-dark hover:text-text-dark'}`}
             >
               RESET
             </button>
@@ -318,9 +337,9 @@ export const FocusTimer = () => {
           <button
             onClick={handleDistracted}
             disabled={!isRunning}
-            className={`w-full py-2 rounded-xl font-bold text-[11px] transition-all border-2 border-cream-dark uppercase ${
+            className={`w-full py-2 font-bold text-[11px] transition-all border-2 uppercase ${theme === 'kawaii' ? 'border-[#5A3A3A] font-sans rounded-none text-[#5A3A3A]' : 'border-cream-dark rounded-xl'} ${
               isRunning
-                ? 'text-text-muted hover:bg-cream-dark hover:text-text-dark'
+                ? (theme === 'kawaii' ? 'bg-[#FDE8E8] shadow-[2px_2px_0_rgba(90,58,58,0.2)] active:translate-y-[2px] active:shadow-none' : 'text-text-muted hover:bg-cream-dark hover:text-text-dark')
                 : 'opacity-0 pointer-events-none'
             }`}
           >
@@ -332,27 +351,27 @@ export const FocusTimer = () => {
 
       {/* Floating Pill Widget */}
       {isFloating && (
-        <div className="fixed bottom-6 right-6 z-50 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full animate-in fade-in slide-in-from-bottom-5 duration-300">
+        <div className={`fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-5 duration-300 ${theme === 'kawaii' ? '' : 'shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full'}`}>
           <div 
             onClick={() => {
                window.scrollTo({ top: 0, behavior: 'smooth' });
                setIsManualFloating(false);
             }}
-            className="flex items-center gap-4 bg-white/95 backdrop-blur-md px-5 py-2.5 rounded-full border-2 border-cream-dark cursor-pointer transition-all hover:scale-[1.02] active:scale-95"
+            className={`flex items-center gap-4 px-5 py-2.5 cursor-pointer transition-all hover:scale-[1.02] active:scale-95 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border-2 border-[#F4B8C1] shadow-[4px_4px_0_rgba(244,184,193,0.3)] rounded-none' : 'bg-white/95 backdrop-blur-md rounded-full border-2 border-cream-dark'}`}
             title="Click to return to main timer"
           >
             <div className="flex items-center gap-2">
               <span className="text-xl">{isFlowState ? '🌊' : '🧱'}</span>
-              <span className={`font-baloo font-extrabold text-2xl tracking-wide leading-none pt-0.5 ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}>
+              <span className={`font-extrabold text-2xl tracking-wide leading-none pt-0.5 ${theme === 'kawaii' ? 'font-sans text-[#5A3A3A]' : `font-baloo ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}`}>
                 {formatTime(timeLeft)}
               </span>
             </div>
             
-            <div className="w-px h-6 bg-cream-dark mx-1"></div>
+            <div className={`w-px h-6 mx-1 ${theme === 'kawaii' ? 'bg-[#F4B8C1]' : 'bg-cream-dark'}`}></div>
 
             <button 
               onClick={(e) => { e.stopPropagation(); toggleTimer(); }}
-              className={`flex items-center justify-center w-9 h-9 rounded-full transition-colors ${isRunning ? 'bg-cream-dark text-text-muted hover:bg-coral-pale hover:text-coral' : 'bg-coral text-white shadow-md hover:bg-[#E07652]'}`}
+              className={`flex items-center justify-center w-9 h-9 transition-colors ${theme === 'kawaii' ? 'rounded-none border-2 border-[#5A3A3A] bg-[#7DDFC3] text-[#5A3A3A] active:translate-y-[2px] active:shadow-none shadow-[2px_2px_0_#5A3A3A]' : `rounded-full ${isRunning ? 'bg-cream-dark text-text-muted hover:bg-coral-pale hover:text-coral' : 'bg-coral text-white shadow-md hover:bg-[#E07652]'}`}`}
             >
               {isRunning ? (
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="4" width="5" height="16" rx="1"/><rect x="14" y="4" width="5" height="16" rx="1"/></svg>
@@ -364,5 +383,64 @@ export const FocusTimer = () => {
         </div>
       )}
     </Card>
+
+      {/* Custom Confirm Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
+          {theme === 'kawaii' ? (
+            <div className="relative bg-white border-2 border-[#F4B8C1] shadow-[4px_4px_0_rgba(244,184,193,0.5)] w-full max-w-[320px] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+              <div className="bg-[#F4B8C1] px-2 py-1 flex items-center justify-between border-b-2 border-[#F4B8C1]">
+                <div className="text-[#5A3A3A] font-bold text-[12px] tracking-wide font-sans">confirm.exe</div>
+                <div className="flex gap-1">
+                  <button onClick={() => setConfirmModal(null)} className="w-3.5 h-3.5 bg-white border border-[#5A3A3A] shadow-[1px_1px_0_#5A3A3A] flex items-center justify-center text-[8px] active:translate-y-[1px] active:shadow-none active:translate-x-[1px] transition-all">✕</button>
+                </div>
+              </div>
+              <div className="p-5">
+                <div className="text-center text-4xl mb-3">{confirmModal.emoji}</div>
+                <p className="text-center text-[14px] font-bold text-[#5A3A3A] leading-relaxed mb-6 font-sans">
+                  {confirmModal.message}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setConfirmModal(null)}
+                    className="flex-1 bg-white text-[#5A3A3A] py-2.5 font-bold text-[13px] border-2 border-[#F4B8C1] border-b-4 active:border-b-2 active:translate-y-[2px] transition-all select-none"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={confirmModal.onConfirm}
+                    className="flex-[1.5] bg-[#7DDFC3] text-[#5A3A3A] py-2.5 font-bold text-[13px] border-2 border-[#5A3A3A] border-b-4 active:border-b-2 active:translate-y-[2px] transition-all select-none shadow-[2px_2px_0_rgba(244,184,193,0.5)]"
+                  >
+                    Yes, I'm sure
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="relative bg-white/90 backdrop-blur-xl rounded-[20px] p-6 w-[320px] border-[1.5px] border-white/60 shadow-[0_20px_60px_rgba(247,134,96,0.2)] animate-in fade-in zoom-in-95 duration-200">
+              <div className="text-center text-4xl mb-3">{confirmModal.emoji}</div>
+              <p className="text-center text-[14px] font-semibold text-text-dark leading-relaxed mb-5">
+                {confirmModal.message}
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setConfirmModal(null)}
+                  className="flex-1 py-2.5 rounded-xl font-bold text-[13px] border-2 border-cream-dark text-text-muted hover:bg-cream-dark hover:text-text-dark transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmModal.onConfirm}
+                  className="flex-1 py-2.5 rounded-xl font-bold text-[13px] bg-coral text-white border-2 border-coral hover:bg-[#E07652] transition-all shadow-[0_4px_0_#A03D20] active:translate-y-[4px] active:shadow-none"
+                >
+                  Yes, I'm sure
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </>
   );
 };

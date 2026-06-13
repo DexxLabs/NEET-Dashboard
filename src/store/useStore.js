@@ -227,6 +227,10 @@ export const useStore = create(
     }),
     {
       name: 'nituNeet2025',
+      partialize: (state) => {
+        const { toastQueue, isHydrated, ...persistedState } = state;
+        return persistedState;
+      }
     }
   )
 );

@@ -14,13 +14,26 @@ import { PowerUps } from './components/interactivity/PowerUps';
 import { FocusTimer } from './components/interactivity/FocusTimer';
 import { SyllabusChecklist } from './components/analytics/SyllabusChecklist';
 import { CustomCursor } from './components/ui/CustomCursor';
+import { ThemeToggle } from './components/ui/ThemeToggle';
+import { BootScreen } from './components/ui/BootScreen';
 import { useStore } from './store/useStore';
+import { useTheme } from './store/useTheme';
 
 function App() {
   const checkDayShift = useStore(state => state.checkDayShift);
   const fetchFromFirebase = useStore(state => state.fetchFromFirebase);
   const isHydrated = useStore(state => state.isHydrated);
   const resetProgress = useStore(state => state.resetProgress);
+
+  const theme = useTheme(state => state.theme);
+
+  useEffect(() => {
+    if (theme === 'kawaii') {
+      document.body.classList.add('kawaii');
+    } else {
+      document.body.classList.remove('kawaii');
+    }
+  }, [theme]);
 
   useEffect(() => {
     if (window.location.search.includes('reset=true')) {
@@ -61,11 +74,23 @@ function App() {
     <div className="relative min-h-screen overflow-hidden">
       <CustomCursor />
       {/* Cute floating elements */}
-      <div className="fixed top-28 left-[5%] text-5xl opacity-[0.15] animate-[bounce_6s_infinite] pointer-events-none z-0 select-none">🌸</div>
-      <div className="fixed bottom-32 left-[10%] text-6xl opacity-[0.15] animate-[pulse_4s_infinite] pointer-events-none z-0 select-none">✨</div>
-      <div className="fixed top-40 right-[8%] text-4xl opacity-[0.2] animate-[bounce_7s_infinite] pointer-events-none z-0 select-none" style={{ animationDelay: '1s' }}>🌙</div>
-      <div className="fixed bottom-40 right-[15%] text-5xl opacity-[0.15] animate-[pulse_5s_infinite] pointer-events-none z-0 select-none" style={{ animationDelay: '2s' }}>⭐</div>
-      <div className="fixed top-[40%] left-[2%] text-4xl opacity-[0.15] animate-[bounce_8s_infinite] pointer-events-none z-0 select-none" style={{ animationDelay: '3s' }}>📚</div>
+      {theme === 'kawaii' ? (
+        <>
+          <div className="fixed top-28 left-[5%] text-5xl opacity-[0.2] animate-[bounce_6s_infinite] pointer-events-none z-0 select-none text-[#F4B8C1]">♥</div>
+          <div className="fixed bottom-32 left-[10%] text-6xl opacity-[0.2] animate-[pulse_4s_infinite] pointer-events-none z-0 select-none text-[#F4B8C1]">♥</div>
+          <div className="fixed top-40 right-[8%] text-4xl opacity-[0.3] animate-[bounce_7s_infinite] pointer-events-none z-0 select-none text-[#F4B8C1]" style={{ animationDelay: '1s' }}>♥</div>
+          <div className="fixed bottom-40 right-[15%] text-5xl opacity-[0.2] animate-[pulse_5s_infinite] pointer-events-none z-0 select-none text-[#F4B8C1]" style={{ animationDelay: '2s' }}>♥</div>
+          <div className="fixed top-[40%] left-[2%] text-4xl opacity-[0.2] animate-[bounce_8s_infinite] pointer-events-none z-0 select-none text-[#F4B8C1]" style={{ animationDelay: '3s' }}>♥</div>
+        </>
+      ) : (
+        <>
+          <div className="fixed top-28 left-[5%] text-5xl opacity-[0.15] animate-[bounce_6s_infinite] pointer-events-none z-0 select-none">🌸</div>
+          <div className="fixed bottom-32 left-[10%] text-6xl opacity-[0.15] animate-[pulse_4s_infinite] pointer-events-none z-0 select-none">✨</div>
+          <div className="fixed top-40 right-[8%] text-4xl opacity-[0.2] animate-[bounce_7s_infinite] pointer-events-none z-0 select-none" style={{ animationDelay: '1s' }}>🌙</div>
+          <div className="fixed bottom-40 right-[15%] text-5xl opacity-[0.15] animate-[pulse_5s_infinite] pointer-events-none z-0 select-none" style={{ animationDelay: '2s' }}>⭐</div>
+          <div className="fixed top-[40%] left-[2%] text-4xl opacity-[0.15] animate-[bounce_8s_infinite] pointer-events-none z-0 select-none" style={{ animationDelay: '3s' }}>📚</div>
+        </>
+      )}
 
       <Header />
       <CountdownStrip />
@@ -100,6 +125,8 @@ function App() {
         made with 💛 for <strong>Nitu</strong> · <span className="text-coral">You are going to absolutely smash that 600+</span> 🐰✨
       </div>
 
+      <ThemeToggle />
+      <BootScreen />
       <Toast />
     </div>
   );

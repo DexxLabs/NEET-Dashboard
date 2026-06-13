@@ -51,6 +51,70 @@
     background-color: transparent !important;
     mix-blend-mode: darken;
   }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-coral-light);
+    border-radius: 100px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-coral);
+  }
+
+  /* Custom Selection */
+  ::selection {
+    background-color: var(--color-yellow);
+    color: var(--color-text-dark);
+  }
+
+  /* Kawaii Theme Overrides */
+  body.kawaii {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    background-color: #FDE8E8;
+    background-image: 
+      linear-gradient(rgba(244, 184, 193, 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(244, 184, 193, 0.4) 1px, transparent 1px);
+    background-size: 20px 20px;
+    color: #5A3A3A;
+  }
+
+  body.kawaii .font-baloo {
+    font-family: 'Sniglet', cursive !important;
+  }
+  
+  body.kawaii .font-nunito,
+  body.kawaii .font-sans {
+    font-family: 'Quicksand', sans-serif !important;
+  }
+
+  body.kawaii ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+  body.kawaii ::-webkit-scrollbar-track {
+    background: #FDE8E8;
+    border-left: 2px solid #F4B8C1;
+  }
+  body.kawaii ::-webkit-scrollbar-thumb {
+    background: #7DDFC3;
+    border: 2px solid #5A3A3A;
+    border-radius: 0;
+  }
+  body.kawaii ::-webkit-scrollbar-thumb:hover {
+    background: #6bc0a7;
+  }
+  body.kawaii ::selection {
+    background-color: #F4B8C1;
+    color: #5A3A3A;
+  }
 }
 
 /* Custom utilities that might not perfectly translate to arbitrary Tailwind classes */

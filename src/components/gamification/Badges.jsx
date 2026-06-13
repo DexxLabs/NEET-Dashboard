@@ -1,5 +1,6 @@
 import React from 'react';
 import { useStore } from '../../store/useStore';
+import { useTheme } from '../../store/useTheme';
 import { Card } from '../ui/Card';
 
 const BADGE_LIST = [
@@ -15,26 +16,39 @@ const BADGE_LIST = [
 
 export const Badges = () => {
   const badges = useStore((state) => state.badges);
+  const theme = useTheme((state) => state.theme);
 
   return (
     <Card title="🏆 Badges & Achievements" sub="Collect them all!" className="h-full flex flex-col">
       <div className="grid grid-cols-3 md:grid-cols-4 gap-2.5 mt-1.5 flex-1 content-start">
         {BADGE_LIST.map((b) => {
           const unlocked = b.alwaysUnlocked || badges[b.id];
+          let containerClass = '';
+          
+          if (theme === 'kawaii') {
+            if (unlocked) {
+              containerClass = 'bg-white border-[#7DDFC3] shadow-[2px_2px_0_rgba(125,223,195,0.3)] hover:-translate-y-[2px] rounded-none';
+            } else {
+              containerClass = 'bg-[#FDE8E8] border-[#F4B8C1] opacity-60 rounded-none';
+            }
+          } else {
+            if (unlocked) {
+              containerClass = 'bg-blue-pale border-blue-light hover:-translate-y-[2px] rounded-[14px]';
+            } else {
+              containerClass = 'bg-cream-dark border-transparent rounded-[14px]';
+            }
+          }
+          
           return (
             <div 
               key={b.id}
               title={b.title}
-              className={`h-[110px] w-full rounded-[14px] px-1 py-2 text-center border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center overflow-hidden ${
-                unlocked 
-                  ? 'bg-blue-pale border-blue-light hover:-translate-y-[2px]' 
-                  : 'bg-cream-dark border-transparent'
-              }`}
+              className={`h-[110px] w-full px-1 py-2 text-center border-2 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center overflow-hidden ${containerClass}`}
             >
               <div className={`text-[28px] ${!unlocked ? 'grayscale opacity-40' : ''}`}>
                 {b.emoji}
               </div>
-              <div className={`text-[11px] font-bold mt-1.5 leading-[1.3] ${unlocked ? 'text-text-dark' : 'text-text-muted'}`}>
+              <div className={`text-[11px] mt-1.5 leading-[1.3] ${theme === 'kawaii' ? (unlocked ? 'text-[#5A3A3A] font-bold font-sans' : 'text-[#5A3A3A] opacity-70 font-bold font-sans') : (unlocked ? 'text-text-dark font-bold' : 'text-text-muted font-bold')}`}>
                 {b.name}
               </div>
             </div>
