@@ -126,12 +126,11 @@ export const CustomCursor = () => {
             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#F5F0E8] border-b-[1.5px] border-r-[1.5px] border-[#D8CEBC] rotate-45"></div>
           </div>
 
-          {/* Kitty Image with Physics Wrapper */}
           <div 
             ref={kittyInnerRef}
             className="absolute"
             style={{ 
-              left: '-16px', // exactly half of 32px width to center her
+              left: '-24px', // exactly half of 48px width to center her
               top: '6px',
               transformOrigin: 'bottom center',
               transition: 'transform 0.1s linear' // smooth out the frame ticks
@@ -140,7 +139,7 @@ export const CustomCursor = () => {
             <img 
               src="/hellokitty.png" 
               alt="Hello Kitty Companion" 
-              className="w-[32px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
+              className="w-[48px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
               draggable="false"
             />
           </div>
