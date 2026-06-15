@@ -119,7 +119,7 @@ export const CustomCursor = () => {
             ref={kittyImgRef}
             src="/hellokitty.png" 
             alt="Hello Kitty" 
-            className="w-[42px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
+            className="w-[32px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
             draggable="false"
             style={{ 
               transform: 'translate(-50%, 6px)', // perfectly centered below the cursor
