@@ -139,7 +139,7 @@ export const CustomCursor = () => {
         >
           {/* Mascot Speech Bubble */}
           <div 
-            className="absolute bottom-[0px] left-0 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
+            className="absolute bottom-[25px] left-0 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
             style={{ 
               fontFamily: "'Courier Prime','Courier New',monospace",
               opacity: message ? 1 : 0,
@@ -154,8 +154,8 @@ export const CustomCursor = () => {
             ref={kittyInnerRef}
             className="absolute"
             style={{ 
-              left: '-24px', // Scaled offset for 96px width
-              top: '-25px', // Pulled up significantly to counter the scaled transparent padding
+              left: '-4px', // Shifted right to compensate for asymmetric transparency
+              top: '10px',  // Pushed down to prevent overlap with chatbox
               transformOrigin: 'bottom center',
               transition: 'transform 0.1s linear' // smooth out the frame ticks
             }}
