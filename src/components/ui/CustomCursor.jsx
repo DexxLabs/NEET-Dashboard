@@ -154,7 +154,7 @@ export const CustomCursor = () => {
             ref={kittyInnerRef}
             className="absolute"
             style={{ 
-              left: '-18px', // Scaled offset for 72px width
+              left: '-24px', // Scaled offset for 96px width
               top: '5px',
               transformOrigin: 'bottom center',
               transition: 'transform 0.1s linear' // smooth out the frame ticks
@@ -163,7 +163,8 @@ export const CustomCursor = () => {
             <img 
               src="/hellokitty.png" 
               alt="Hello Kitty Companion" 
-              className="w-[72px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
+              className="drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
+              style={{ width: '96px' }}
               draggable="false"
             />
           </div>
