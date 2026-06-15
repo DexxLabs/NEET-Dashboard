@@ -29,6 +29,12 @@ export const CustomCursor = () => {
     const wrapper = wrapperRef.current;
     const dot = dotRef.current;
     
+    // Initialize chaser at current mouse position instantly so she doesn't start at 0,0
+    if (chaserWrapperRef.current) {
+      gsap.set(chaserWrapperRef.current, { x: lastMousePos.current.x, y: lastMousePos.current.y });
+    }
+    gsap.set(wrapper, { x: lastMousePos.current.x, y: lastMousePos.current.y });
+    
     // Physics state for leaning
     let currentRotation = 0;
     let rotationVelocity = 0;
@@ -141,7 +147,7 @@ export const CustomCursor = () => {
           </div>
 
           {/* Centering wrapper for Kitty to prevent React from overwriting GSAP's inline transforms during re-renders */}
-          <div className="absolute -translate-x-1/2 translate-y-[6px]">
+          <div className="absolute left-0 top-0 -translate-x-1/2 translate-y-[6px]">
             <img 
               ref={kittyImgRef}
               src="/hellokitty.png" 
