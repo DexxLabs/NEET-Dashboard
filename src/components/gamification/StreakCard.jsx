@@ -33,21 +33,37 @@ export const StreakCard = () => {
     <Card title="🔥 Study Streak" sub="Complete 2+ tasks/day to keep it alive!">
       <div className="flex flex-col md:flex-row items-start md:items-center gap-5">
         <div>
-          <div className={`font-extrabold text-[36px] leading-none ${theme === 'kawaii' ? 'text-[#5A3A3A] font-sans' : 'font-baloo text-coral'}`}>{streak}</div>
-          <div className={`text-[12px] font-semibold mt-0.5 ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70 font-sans' : 'text-text-muted'}`}>day streak</div>
+          <div
+            className="font-extrabold text-[36px] leading-none"
+            style={theme === 'cozy' ? { color: '#B5302A', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}
+          >
+            <span className={theme === 'kawaii' ? 'text-[#5A3A3A] font-sans' : theme === 'cozy' ? '' : 'font-baloo text-coral'}>{streak}</span>
+          </div>
+          <div
+            className={`text-[12px] font-semibold mt-0.5 ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70 font-sans' : theme === 'cozy' ? 'font-mono' : 'text-text-muted'}`}
+            style={theme === 'cozy' ? { color: 'rgba(58,46,42,0.6)', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}
+          >day streak</div>
         </div>
         <div className="flex gap-2 flex-wrap">
           {days.map((day) => {
             let stateClass = '';
-            if (day <= streak) {
+            let stateStyle = {};
+            if (theme === 'cozy') {
+              if (day <= streak) {
+                stateStyle = { background: '#B5302A', border: '1.5px solid #8B1A14', color: '#F5F0E8', borderRadius: '6px' };
+              } else {
+                stateStyle = { background: 'transparent', border: '1.5px solid #D8CEBC', color: '#D8CEBC', borderRadius: '6px' };
+              }
+            } else if (day <= streak) {
               stateClass = theme === 'kawaii' ? 'bg-[#7DDFC3] border-[#5A3A3A] text-[#5A3A3A] rounded-none' : 'bg-coral border-[#D05830] text-white rounded-[10px]';
             } else {
               stateClass = theme === 'kawaii' ? 'bg-[#FDE8E8] border-[#F4B8C1] text-[#F4B8C1] rounded-none' : 'bg-white border-cream-dark text-cream-dark rounded-[10px]';
             }
             return (
-              <div 
+              <div
                 key={day}
-                className={`w-[34px] h-[34px] flex items-center justify-center font-bold text-[13px] border-2 ${theme === 'kawaii' ? 'font-sans' : 'font-baloo'} ${stateClass}`}
+                className={`w-[34px] h-[34px] flex items-center justify-center font-bold text-[13px] ${theme !== 'cozy' ? 'border-2' : ''} ${theme === 'kawaii' ? 'font-sans' : theme === 'cozy' ? '' : 'font-baloo'} ${stateClass}`}
+                style={theme === 'cozy' ? { ...stateStyle, fontFamily: "'Courier Prime','Courier New',monospace" } : {}}
               >
                 {day}
               </div>
@@ -55,7 +71,10 @@ export const StreakCard = () => {
           })}
         </div>
       </div>
-      <div className={`border-[1.5px] py-2.5 px-3.5 text-[13px] font-semibold mt-3.5 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border-[#F4B8C1] rounded-none text-[#5A3A3A] font-sans shadow-[2px_2px_0_rgba(244,184,193,0.3)]' : 'bg-[#FFF0EC] border-coral-light rounded-xl text-[#A03D20]'}`}>
+      <div
+        className={`border-[1.5px] py-2.5 px-3.5 text-[13px] font-semibold mt-3.5 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border-[#F4B8C1] rounded-none text-[#5A3A3A] font-sans shadow-[2px_2px_0_rgba(244,184,193,0.3)]' : theme === 'cozy' ? '' : 'bg-[#FFF0EC] border-coral-light rounded-xl text-[#A03D20]'}`}
+        style={theme === 'cozy' ? { background: '#F5F0E8', border: '1.5px solid #D8CEBC', borderRadius: '6px', color: '#3A2E2A', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}
+      >
         {streakMsg}
       </div>
     </Card>

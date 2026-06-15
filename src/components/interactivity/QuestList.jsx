@@ -16,28 +16,49 @@ export const QuestList = () => {
   const toggleQuest = useStore((state) => state.toggleQuest);
   const theme = useTheme(state => state.theme);
 
+  const isCozy = theme === 'cozy';
+
   return (
     <Card title="🎯 Daily Quests" sub="Finish all 5 for +100 Bonus XP 🌟">
       <div>
         {QUESTS.map((q) => {
           const isDone = !!doneQuests[q.id];
+          let rowClass = '';
+          let rowStyle = {};
+          let xpClass = '';
+          let xpStyle = {};
+
+          if (isCozy) {
+            rowStyle = isDone
+              ? { background: '#EDE8DE', border: '1.5px solid #D8CEBC', borderRadius: '6px', opacity: 0.75 }
+              : { background: 'rgba(255,255,255,0.80)', border: '1.5px solid #D8CEBC', borderRadius: '6px', cursor: 'pointer' };
+            xpStyle = isDone
+              ? { background: '#EDE8DE', color: '#8A7A6A', borderRadius: '6px', fontFamily: "'Courier Prime','Courier New',monospace" }
+              : { background: '#F5F0E8', color: '#B5302A', border: '1px solid #D8CEBC', borderRadius: '6px', fontFamily: "'Courier Prime','Courier New',monospace" };
+          } else if (theme === 'kawaii') {
+            rowClass = `rounded-none ${isDone ? 'bg-[#FDE8E8] border-[#F4B8C1]' : 'bg-white border-[#F4B8C1] shadow-[2px_2px_0_rgba(244,184,193,0.3)] hover:-translate-y-[2px]'}`;
+          } else {
+            rowClass = `rounded-[14px] ${isDone ? 'bg-[#F0FFF8] border-[#9EECD0]' : 'bg-white border-cream-dark hover:border-blue-light hover:translate-x-[3px]'}`;
+          }
+
           return (
-            <div 
+            <div
               key={q.id}
               onClick={() => toggleQuest(q.id, q.xp)}
-              className={`flex items-center gap-3.5 py-3 px-3.5 mb-2 border-[1.5px] cursor-pointer transition-all duration-200 select-none ${theme === 'kawaii' ? 'rounded-none' : 'rounded-[14px]'} ${
-                isDone 
-                  ? (theme === 'kawaii' ? 'bg-[#FDE8E8] border-[#F4B8C1]' : 'bg-[#F0FFF8] border-[#9EECD0]') 
-                  : (theme === 'kawaii' ? 'bg-white border-[#F4B8C1] shadow-[2px_2px_0_rgba(244,184,193,0.3)] hover:-translate-y-[2px]' : 'bg-white border-cream-dark hover:border-blue-light hover:translate-x-[3px]')
-              }`}
+              className={`flex items-center gap-3.5 py-3 px-3.5 mb-2 border-[1.5px] cursor-pointer transition-all duration-200 select-none ${!isCozy ? rowClass : ''}`}
+              style={isCozy ? rowStyle : {}}
             >
               <div className="text-[22px]">{q.emoji}</div>
-              <div className={`flex-1 text-[13px] ${theme === 'kawaii' ? 'font-bold font-sans' : 'font-semibold'} ${isDone ? `line-through ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-60' : 'text-text-muted'}` : (theme === 'kawaii' ? 'text-[#5A3A3A]' : 'text-text-dark')}`}>
+              <div
+                className={`flex-1 text-[13px] ${!isCozy ? (theme === 'kawaii' ? 'font-bold font-sans' : 'font-semibold') : 'font-mono'} ${isDone && !isCozy ? `line-through ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-60' : 'text-text-muted'}` : (!isCozy && (theme === 'kawaii' ? 'text-[#5A3A3A]' : 'text-text-dark'))}`}
+                style={isCozy ? { color: isDone ? 'rgba(58,46,42,0.5)' : '#3A2E2A', textDecoration: isDone ? 'line-through' : 'none', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}
+              >
                 {q.text}
               </div>
-              <div className={`font-extrabold text-[12px] py-[3px] px-2.5 ${theme === 'kawaii' ? 'font-sans rounded-none' : 'font-baloo rounded-pill'} ${
-                isDone ? (theme === 'kawaii' ? 'bg-[#7DDFC3] text-[#5A3A3A]' : 'bg-[#DFFFF0] text-[#0F7A4E]') : (theme === 'kawaii' ? 'bg-[#FDE8E8] text-[#5A3A3A]' : 'bg-blue-pale text-blue')
-              }`}>
+              <div
+                className={`font-extrabold text-[12px] py-[3px] px-2.5 ${!isCozy ? (theme === 'kawaii' ? 'font-sans rounded-none' : 'font-baloo rounded-pill') : ''} ${!isCozy ? (isDone ? (theme === 'kawaii' ? 'bg-[#7DDFC3] text-[#5A3A3A]' : 'bg-[#DFFFF0] text-[#0F7A4E]') : (theme === 'kawaii' ? 'bg-[#FDE8E8] text-[#5A3A3A]' : 'bg-blue-pale text-blue')) : ''}`}
+                style={isCozy ? xpStyle : {}}
+              >
                 +{q.xp} XP
               </div>
             </div>

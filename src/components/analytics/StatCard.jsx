@@ -1,8 +1,8 @@
 import React from 'react';
-import { useTheme } from '../../store/useTheme';
 import { useStore } from '../../store/useStore';
+import { useTheme } from '../../store/useTheme';
 
-const KawaiiStatItem = ({ title, icon, value, target, remark, color }) => (
+const KawaiiStatItem = ({ title, icon, value, target, remark }) => (
   <div className="bg-white border-2 border-[#F4B8C1] shadow-[4px_4px_0_rgba(244,184,193,0.5)] flex flex-col">
     <div className="bg-[#F4B8C1] px-2 py-1 flex items-center justify-between border-b-2 border-[#F4B8C1]">
       <div className="text-[#5A3A3A] font-bold text-[12px] tracking-wide font-sans">{title.toLowerCase()}.exe</div>
@@ -17,6 +17,19 @@ const KawaiiStatItem = ({ title, icon, value, target, remark, color }) => (
       <div className="font-bold text-[24px] text-[#5A3A3A] mb-1">{value}</div>
       <div className="text-[11px] text-[#5A3A3A] opacity-70 font-semibold mb-2">{target}</div>
       <div className="text-[11px] font-bold border border-[#F4B8C1] bg-[#FDE8E8] text-[#5A3A3A] px-1.5 py-0.5 inline-block">{remark}</div>
+    </div>
+  </div>
+);
+
+const CozyStatItem = ({ title, icon, value, target, remark, accentColor }) => (
+  <div style={{ background: 'rgba(255,255,255,0.82)', border: '1.5px solid #D8CEBC', borderRadius: '6px', fontFamily: "'Courier Prime','Courier New',monospace", boxShadow: '0 2px 8px rgba(58,46,42,0.06)' }}>
+    <div style={{ background: '#F7F3EB', borderBottom: '1px solid #D8CEBC', borderRadius: '6px 6px 0 0', padding: '6px 12px' }}>
+      <span style={{ fontSize: '11px', color: '#8A7A6A', letterSpacing: '0.03em' }}>{icon} {title.toLowerCase()}</span>
+    </div>
+    <div className="p-4">
+      <div className="font-bold text-[26px] mb-1" style={{ color: accentColor || '#3A2E2A' }}>{value}</div>
+      <div className="text-[11px] mb-2" style={{ color: 'rgba(58,46,42,0.55)' }}>{target}</div>
+      <div className="text-[10px] font-bold px-1.5 py-0.5 inline-block" style={{ background: '#F5F0E8', border: '1px solid #D8CEBC', borderRadius: '4px', color: '#3A2E2A' }}>{remark}</div>
     </div>
   </div>
 );
@@ -37,9 +50,19 @@ export const StatCard = () => {
     );
   }
 
+  if (theme === 'cozy') {
+    return (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CozyStatItem title="Biology" icon="🌿" value={lastScore.bio} target="Target: 300+ / 360" remark="your strength 💪" accentColor="#3A6B35" />
+        <CozyStatItem title="Physics" icon="⚡" value={lastScore.phy} target="Target: 130+ / 180" remark="needs timed practice" accentColor="#2945A8" />
+        <CozyStatItem title="Chemistry" icon="🧪" value={lastScore.che} target="Target: 130+ / 180" remark="effort = marks 🔑" accentColor="#B5302A" />
+        <CozyStatItem title="Mock Score" icon="🏆" value={lastScore.total} target="Goal: 600+ / 720" remark="latest score" accentColor="#B5302A" />
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {/* Bio */}
       <div className="bg-white/70 backdrop-blur-md rounded-[20px] p-5 border-[1.5px] border-[#3ECFA0] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(62,207,160,0.2)]">
         <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] mb-3 bg-[#C8F0E0]">🌿</div>
         <div className="text-[12px] font-bold uppercase tracking-[0.8px] text-text-muted mb-1">Biology</div>
@@ -47,7 +70,6 @@ export const StatCard = () => {
         <div className="text-[12px] text-text-muted font-semibold mt-0.5">Target: 300+ / 360</div>
         <div className="inline-block text-[11px] font-bold py-[3px] px-2 rounded-pill mt-2 bg-[#DFFFF0] text-[#0F7A4E]">Your strength 💪</div>
       </div>
-      {/* Phy */}
       <div className="bg-white/70 backdrop-blur-md rounded-[20px] p-5 border-[1.5px] border-blue-light transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(61,95,199,0.2)]">
         <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] mb-3 bg-blue-pale">⚡</div>
         <div className="text-[12px] font-bold uppercase tracking-[0.8px] text-text-muted mb-1">Physics</div>
@@ -55,7 +77,6 @@ export const StatCard = () => {
         <div className="text-[12px] text-text-muted font-semibold mt-0.5">Target: 130+ / 180</div>
         <div className="inline-block text-[11px] font-bold py-[3px] px-2 rounded-pill mt-2 bg-[#FFF0E0] text-[#B05A00]">Needs timed practice</div>
       </div>
-      {/* Che */}
       <div className="bg-white/70 backdrop-blur-md rounded-[20px] p-5 border-[1.5px] border-coral transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(247,134,96,0.2)]">
         <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] mb-3 bg-[#FFE4D8]">🧪</div>
         <div className="text-[12px] font-bold uppercase tracking-[0.8px] text-text-muted mb-1">Chemistry</div>
@@ -63,7 +84,6 @@ export const StatCard = () => {
         <div className="text-[12px] text-text-muted font-semibold mt-0.5">Target: 130+ / 180</div>
         <div className="inline-block text-[11px] font-bold py-[3px] px-2 rounded-pill mt-2 bg-[#FFF0E0] text-[#B05A00]">Effort = Marks 🔑</div>
       </div>
-      {/* Total */}
       <div className="bg-blue/90 backdrop-blur-md rounded-[20px] p-5 border-[1.5px] border-yellow-deep transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_40px_rgba(255,204,122,0.25)]">
         <div className="w-11 h-11 rounded-xl flex items-center justify-center text-[22px] mb-3 bg-yellow/20">🏆</div>
         <div className="text-[12px] font-bold uppercase tracking-[0.8px] text-white/60 mb-1">Latest Mock</div>

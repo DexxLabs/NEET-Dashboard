@@ -2,6 +2,17 @@ import React from 'react';
 import { useTheme } from '../../store/useTheme';
 import { getDaysToExam } from '../../utils/dateUtils';
 
+// macOS traffic lights for the cozy header
+const CozyTrafficLights = () => (
+  <div className="flex items-center gap-[6px]">
+    {[['#FF5F57','✕'],['#FEBC2E','−'],['#28C840','⤢']].map(([c, sym], i) => (
+      <div key={i} className="group w-3 h-3 rounded-full flex items-center justify-center cursor-default" style={{ background: c }}>
+        <span className="opacity-0 group-hover:opacity-100 text-[6px] font-bold leading-none select-none" style={{ color: i===0?'#8B1A14':i===1?'#8B6A00':'#0A5A1A' }}>{sym}</span>
+      </div>
+    ))}
+  </div>
+);
+
 export const Header = () => {
   const daysRemaining = getDaysToExam();
   const totalDays = 15;
@@ -11,7 +22,6 @@ export const Header = () => {
   if (theme === 'kawaii') {
     return (
       <header className="bg-white border-2 border-[#F4B8C1] shadow-[4px_4px_0_rgba(244,184,193,0.5)] flex flex-col mb-4">
-        {/* Title bar */}
         <div className="bg-[#F4B8C1] px-3 py-1.5 flex items-center justify-between border-b-2 border-[#F4B8C1]">
           <div className="text-[#5A3A3A] font-bold text-[14px] tracking-wide font-sans">neet_quest.exe</div>
           <div className="flex gap-1.5">
@@ -22,19 +32,14 @@ export const Header = () => {
         </div>
         <div className="py-5 px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-[#FDE8E8] border-2 border-[#F4B8C1] flex items-center justify-center text-3xl shadow-[2px_2px_0_rgba(244,184,193,0.5)] shrink-0">
-              🐰
-            </div>
+            <div className="w-14 h-14 bg-[#FDE8E8] border-2 border-[#F4B8C1] flex items-center justify-center text-3xl shadow-[2px_2px_0_rgba(244,184,193,0.5)] shrink-0">🐰</div>
             <div>
               <div className="font-sans text-[20px] md:text-[24px] font-bold text-[#5A3A3A] leading-[1.1] mb-1">
                 Nitu's <span className="text-[#F4B8C1] drop-shadow-[1px_1px_0_#5A3A3A]">NEET Quest</span> ✨
               </div>
-              <div className="text-[13px] text-[#5A3A3A] font-medium opacity-80">
-                Score 600+ in {daysRemaining} days · You got this!
-              </div>
+              <div className="text-[13px] text-[#5A3A3A] font-medium opacity-80">Score 600+ in {daysRemaining} days · You got this!</div>
             </div>
           </div>
-
           <div className="flex gap-3 items-center">
             <div className="bg-[#FDE8E8] border-2 border-[#F4B8C1] px-4 py-2 text-[#5A3A3A] font-bold text-sm shadow-[2px_2px_0_rgba(244,184,193,0.5)] font-sans">
               Day <span className="text-[#F4B8C1] drop-shadow-[1px_1px_0_#5A3A3A] text-lg">{currentDay}</span> of {totalDays}
@@ -45,24 +50,54 @@ export const Header = () => {
     );
   }
 
+  if (theme === 'cozy') {
+    return (
+      <header
+        className="flex flex-col mb-4 relative z-10"
+        style={{ background: 'rgba(255,255,255,0.82)', borderBottom: '1.5px solid #D8CEBC', fontFamily: "'Courier Prime','Courier New',monospace" }}
+      >
+        {/* macOS title bar */}
+        <div className="px-4 py-2 flex items-center gap-3" style={{ borderBottom: '1px solid #D8CEBC', background: '#F7F3EB' }}>
+          <CozyTrafficLights />
+          <span className="text-[11px] text-[#8A7A6A] tracking-wide lowercase mx-auto pr-16">study_session.txt</span>
+        </div>
+        {/* Content */}
+        <div className="py-4 px-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 flex items-center justify-center text-3xl shrink-0" style={{ background: '#F5F0E8', border: '1.5px solid #D8CEBC', borderRadius: '6px' }}>🐰</div>
+            <div>
+              <div className="font-bold text-[20px] md:text-[24px] leading-[1.1] mb-1" style={{ color: '#3A2E2A' }}>
+                Nitu's <span style={{ color: '#B5302A' }}>NEET Quest</span> ✨
+              </div>
+              <div className="text-[12px] font-mono" style={{ color: 'rgba(58,46,42,0.6)' }}>
+                score 600+ in {daysRemaining} days · you got this, bestie!
+              </div>
+            </div>
+          </div>
+          <div
+            className="font-mono font-bold text-[13px] px-4 py-1.5 lowercase"
+            style={{ background: '#F5F0E8', border: '1.5px solid #D8CEBC', borderRadius: '6px', color: '#3A2E2A' }}
+          >
+            [day <span style={{ color: '#B5302A' }}>{currentDay}</span> / {totalDays}]
+          </div>
+        </div>
+      </header>
+    );
+  }
+
+  // Default
   return (
     <header className="bg-blue py-6 px-4 md:px-16 lg:px-24 xl:px-32 flex flex-col md:flex-row items-start md:items-center justify-between relative overflow-hidden gap-4">
       <div className="absolute w-[300px] h-[300px] bg-white/5 rounded-full -top-[120px] -right-[60px]" />
-      
       <div className="flex items-center gap-4">
-        <div className="w-16 h-16 bg-yellow rounded-full flex items-center justify-center text-3xl border-[3px] border-yellow-deep shadow-[0_4px_0_var(--color-yellow-deep)] shrink-0 z-10">
-          🐰
-        </div>
+        <div className="w-16 h-16 bg-yellow rounded-full flex items-center justify-center text-3xl border-[3px] border-yellow-deep shadow-[0_4px_0_var(--color-yellow-deep)] shrink-0 z-10">🐰</div>
         <div className="z-10">
           <div className="font-baloo text-[22px] md:text-[28px] font-extrabold text-white leading-[1.1]">
             Nitu's <span className="text-yellow">NEET Quest</span> ✨
           </div>
-          <div className="text-[13px] text-white/65 font-medium mt-[2px]">
-            Score 600+ in {daysRemaining} days · You got this, guddi!
-          </div>
+          <div className="text-[13px] text-white/65 font-medium mt-[2px]">Score 600+ in {daysRemaining} days · You got this, guddi!</div>
         </div>
       </div>
-
       <div className="flex gap-3 items-center z-10">
         <div className="bg-white/[0.13] border-[1.5px] border-white/20 rounded-pill px-4 py-1.5 text-white font-bold text-sm font-baloo">
           Day <span className="text-yellow">{currentDay}</span> of {totalDays}
@@ -71,4 +106,3 @@ export const Header = () => {
     </header>
   );
 };
-

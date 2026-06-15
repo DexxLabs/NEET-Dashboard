@@ -20,6 +20,95 @@
   --radius-pill: 100px;
 }
 
+/* ─── Design Tokens: Default Theme ────────────────────────────── */
+:root {
+  --color-blue: #2945A8;
+  --color-blue-light: #3D5FC7;
+  --color-blue-pale: #E6EEFF;
+  --color-yellow: #FFCC7A;
+  --color-yellow-deep: #F0A500;
+  --color-coral: #F78660;
+  --color-coral-light: #FFB5A0;
+  --color-cream: #FDF6EC;
+  --color-cream-dark: #F5ECD8;
+  --color-text-dark: #1A2340;
+  --color-text-mid: #3D4F7C;
+  --color-text-muted: #8893B5;
+  --font-nunito: "Nunito", sans-serif;
+  --font-baloo: "Baloo 2", sans-serif;
+  --radius-base: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 100px;
+
+  /* Theme tokens – consumed by all components */
+  --t-bg: #FDF6EC;
+  --t-surface: rgba(255, 255, 255, 0.70);
+  --t-border: rgba(255, 255, 255, 0.60);
+  --t-accent: #2945A8;
+  --t-accent-sub: #F78660;
+  --t-text: #1A2340;
+  --t-text-sub: #8893B5;
+  --t-card-shadow: 0 8px 30px rgba(247, 134, 96, 0.06);
+  --t-bar-fill: #F78660;
+  --t-bar-track: #F5ECD8;
+  --t-radius: 14px;
+  --t-font-body: "Nunito", sans-serif;
+  --t-font-head: "Baloo 2", sans-serif;
+  --t-scrollbar-thumb: #FFB5A0;
+  --t-input-bg: #FFFFFF;
+}
+
+/* ─── Theme Tokens: kawaii ─────────────────────────────────────── */
+body.kawaii {
+  --t-bg: #FDE8E8;
+  --t-surface: #FFFFFF;
+  --t-border: #F4B8C1;
+  --t-accent: #7DDFC3;
+  --t-accent-sub: #F4B8C1;
+  --t-text: #5A3A3A;
+  --t-text-sub: rgba(90, 58, 58, 0.70);
+  --t-card-shadow: 4px 4px 0 rgba(244, 184, 193, 0.5);
+  --t-bar-fill: #7DDFC3;
+  --t-bar-track: #FDE8E8;
+  --t-radius: 18px;
+  --t-font-body: "Quicksand", sans-serif;
+  --t-font-head: "Sniglet", cursive;
+  --t-scrollbar-thumb: #7DDFC3;
+  --t-input-bg: #FFFFFF;
+}
+
+/* ─── Theme Tokens: cozy.grid ──────────────────────────────────── */
+body.cozy {
+  --t-bg: #F5F0E8;
+  --t-surface: rgba(255, 255, 255, 0.80);
+  --t-border: #D8CEBC;
+  --t-accent: #B5302A;
+  --t-accent-sub: #C4A882;
+  --t-text: #3A2E2A;
+  --t-text-sub: rgba(58, 46, 42, 0.65);
+  --t-card-shadow: 0 2px 12px rgba(58, 46, 42, 0.08);
+  --t-bar-fill: #B5302A;
+  --t-bar-track: #EDE8DE;
+  --t-radius: 6px;
+  --t-font-body: "Courier Prime", "Courier New", monospace;
+  --t-font-head: "Courier Prime", "Courier New", monospace;
+  --t-scrollbar-thumb: #D8CEBC;
+  --t-input-bg: rgba(255, 255, 255, 0.90);
+}
+
+/* ─── Theme Utility Classes ────────────────────────────────────── */
+.theme-surface {
+  background: var(--t-surface);
+  border: 1.5px solid var(--t-border);
+}
+.theme-text { color: var(--t-text); }
+.theme-text-sub { color: var(--t-text-sub); }
+.theme-accent { color: var(--t-accent); }
+.theme-bar-fill { background: var(--t-bar-fill); }
+.theme-bar-track { background: var(--t-bar-track); }
+.theme-radius { border-radius: var(--t-radius); }
+
+/* ─── Base Styles ──────────────────────────────────────────────── */
 @layer base {
   body {
     font-family: var(--font-nunito);
@@ -52,53 +141,37 @@
     mix-blend-mode: darken;
   }
 
-  /* Custom Scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  /* Custom Scrollbar — default */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
     background: var(--color-coral-light);
     border-radius: 100px;
   }
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-coral);
-  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-coral); }
 
-  /* Custom Selection */
+  /* Custom Selection — default */
   ::selection {
     background-color: var(--color-yellow);
     color: var(--color-text-dark);
   }
 
-  /* Kawaii Theme Overrides */
+  /* ─── Kawaii Theme ──────────────────────────────────────────── */
   body.kawaii {
     font-family: 'Quicksand', sans-serif;
     font-weight: 600;
     background-color: #FDE8E8;
-    background-image: 
+    background-image:
       linear-gradient(rgba(244, 184, 193, 0.4) 1px, transparent 1px),
       linear-gradient(90deg, rgba(244, 184, 193, 0.4) 1px, transparent 1px);
     background-size: 20px 20px;
     color: #5A3A3A;
   }
-
-  body.kawaii .font-baloo {
-    font-family: 'Sniglet', cursive !important;
-  }
-  
+  body.kawaii .font-baloo { font-family: 'Sniglet', cursive !important; }
   body.kawaii .font-nunito,
-  body.kawaii .font-sans {
-    font-family: 'Quicksand', sans-serif !important;
-  }
+  body.kawaii .font-sans { font-family: 'Quicksand', sans-serif !important; }
 
-  body.kawaii ::-webkit-scrollbar {
-    width: 14px;
-    height: 14px;
-  }
+  body.kawaii ::-webkit-scrollbar { width: 14px; height: 14px; }
   body.kawaii ::-webkit-scrollbar-track {
     background: #FDE8E8;
     border-left: 2px solid #F4B8C1;
@@ -108,36 +181,87 @@
     border: 2px solid #5A3A3A;
     border-radius: 0;
   }
-  body.kawaii ::-webkit-scrollbar-thumb:hover {
-    background: #6bc0a7;
+  body.kawaii ::-webkit-scrollbar-thumb:hover { background: #6bc0a7; }
+  body.kawaii ::selection { background-color: #F4B8C1; color: #5A3A3A; }
+
+  /* ─── cozy.grid Theme ───────────────────────────────────────── */
+  body.cozy {
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    background-color: #F5F0E8;
+    background-image:
+      linear-gradient(rgba(216, 206, 188, 0.45) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(216, 206, 188, 0.45) 1px, transparent 1px);
+    background-size: 24px 24px;
+    color: #3A2E2A;
   }
-  body.kawaii ::selection {
-    background-color: #F4B8C1;
-    color: #5A3A3A;
+
+  body.cozy ::-webkit-scrollbar { width: 6px; height: 6px; }
+  body.cozy ::-webkit-scrollbar-track { background: #F5F0E8; }
+  body.cozy ::-webkit-scrollbar-thumb {
+    background: #D8CEBC;
+    border-radius: 3px;
+  }
+  body.cozy ::-webkit-scrollbar-thumb:hover { background: #C4A882; }
+  body.cozy ::selection { background-color: #C4A882; color: #3A2E2A; }
+
+  /* cozy cursor — allow normal pointer since CustomCursor is only default/kawaii */
+  body.cozy, body.cozy a, body.cozy button,
+  body.cozy select, body.cozy input,
+  body.cozy .cursor-pointer, body.cozy [role="button"] {
+    cursor: auto !important;
+  }
+  body.cozy button, body.cozy [role="button"],
+  body.cozy .cursor-pointer { cursor: pointer !important; }
+
+  /* macOS traffic light hover labels */
+  body.cozy .traffic-dot:hover::after {
+    opacity: 1;
   }
 }
 
-/* Custom utilities that might not perfectly translate to arbitrary Tailwind classes */
-.xp-bar-fill {
-  transition: width 1s ease;
-}
+/* ─── Shared Utility Animations & Classes ──────────────────────── */
+.xp-bar-fill { transition: width 1s ease; }
+.subj-bar-fill { transition: width 1s ease; }
 
-.subj-bar-fill {
-  transition: width 1s ease;
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 /* Toast animation */
-.toast-enter {
-  transform: translateX(-50%) translateY(120px);
-}
+.toast-enter { transform: translateX(-50%) translateY(120px); }
 .toast-enter-active {
   transform: translateX(-50%) translateY(0);
   transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
-.toast-exit {
-  transform: translateX(-50%) translateY(0);
-}
+.toast-exit { transform: translateX(-50%) translateY(0); }
 .toast-exit-active {
   transform: translateX(-50%) translateY(120px);
   transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+/* Sticker wobble animation for cozy.grid */
+@keyframes sticker-wobble {
+  0%, 100% { transform: rotate(var(--sticker-rot, 0deg)) scale(1.05); }
+  25%       { transform: rotate(calc(var(--sticker-rot, 0deg) + 3deg)) scale(1.05); }
+  75%       { transform: rotate(calc(var(--sticker-rot, 0deg) - 3deg)) scale(1.05); }
+}
+
+/* Cozy boot animation */
+@keyframes cozy-boot-fly {
+  from { transform: scale(1) translate(0, 0); opacity: 1; }
+  to   { transform: scale(0.1) translate(300px, -300px); opacity: 0; }
+}
+
+@keyframes cozy-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cozy-sticker-drop {
+  from { opacity: 0; transform: var(--sticker-drop-from, translateY(-20px) rotate(var(--sticker-rot, 0deg))); }
+  to   { opacity: 0.88; transform: var(--sticker-drop-to, translateY(0) rotate(var(--sticker-rot, 0deg))); }
 }

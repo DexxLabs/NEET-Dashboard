@@ -16,6 +16,7 @@ import { SyllabusChecklist } from './components/analytics/SyllabusChecklist';
 import { CustomCursor } from './components/ui/CustomCursor';
 import { ThemeToggle } from './components/ui/ThemeToggle';
 import { BootScreen } from './components/ui/BootScreen';
+import { CozyStickers } from './components/ui/CozyStickers';
 import { useStore } from './store/useStore';
 import { useTheme } from './store/useTheme';
 
@@ -28,11 +29,9 @@ function App() {
   const theme = useTheme(state => state.theme);
 
   useEffect(() => {
-    if (theme === 'kawaii') {
-      document.body.classList.add('kawaii');
-    } else {
-      document.body.classList.remove('kawaii');
-    }
+    document.body.classList.remove('kawaii', 'cozy');
+    if (theme === 'kawaii') document.body.classList.add('kawaii');
+    if (theme === 'cozy')   document.body.classList.add('cozy');
   }, [theme]);
 
   useEffect(() => {
@@ -40,16 +39,11 @@ function App() {
       resetProgress();
       return;
     }
-
     let interval;
     fetchFromFirebase();
     checkDayShift();
-    interval = setInterval(() => {
-      checkDayShift();
-    }, 60000);
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+    interval = setInterval(() => { checkDayShift(); }, 60000);
+    return () => { if (interval) clearInterval(interval); };
   }, [fetchFromFirebase, checkDayShift, resetProgress]);
 
   if (window.location.search.includes('reset=true')) {
@@ -72,8 +66,13 @@ function App() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      <CustomCursor />
-      {/* Cute floating elements */}
+      {/* Sticker decorations — cozy only, behind everything */}
+      {theme === 'cozy' && <CozyStickers />}
+
+      {/* Non-cozy cursor */}
+      {theme !== 'cozy' && <CustomCursor />}
+
+      {/* Floating background decorations */}
       {theme === 'kawaii' ? (
         <>
           <div className="fixed top-28 left-[5%] text-5xl opacity-[0.2] animate-[bounce_6s_infinite] pointer-events-none z-0 select-none text-[#F4B8C1]">♥</div>
@@ -82,7 +81,7 @@ function App() {
           <div className="fixed bottom-40 right-[15%] text-5xl opacity-[0.2] animate-[pulse_5s_infinite] pointer-events-none z-0 select-none text-[#F4B8C1]" style={{ animationDelay: '2s' }}>♥</div>
           <div className="fixed top-[40%] left-[2%] text-4xl opacity-[0.2] animate-[bounce_8s_infinite] pointer-events-none z-0 select-none text-[#F4B8C1]" style={{ animationDelay: '3s' }}>♥</div>
         </>
-      ) : (
+      ) : theme === 'default' ? (
         <>
           <div className="fixed top-28 left-[5%] text-5xl opacity-[0.15] animate-[bounce_6s_infinite] pointer-events-none z-0 select-none">🌸</div>
           <div className="fixed bottom-32 left-[10%] text-6xl opacity-[0.15] animate-[pulse_4s_infinite] pointer-events-none z-0 select-none">✨</div>
@@ -90,15 +89,15 @@ function App() {
           <div className="fixed bottom-40 right-[15%] text-5xl opacity-[0.15] animate-[pulse_5s_infinite] pointer-events-none z-0 select-none" style={{ animationDelay: '2s' }}>⭐</div>
           <div className="fixed top-[40%] left-[2%] text-4xl opacity-[0.15] animate-[bounce_8s_infinite] pointer-events-none z-0 select-none" style={{ animationDelay: '3s' }}>📚</div>
         </>
-      )}
+      ) : null /* cozy: stickers handled by CozyStickers component */ }
 
       <Header />
       <CountdownStrip />
-      
+
       <main className="w-full px-4 md:px-16 lg:px-24 xl:px-32 py-6 md:py-10 flex flex-col gap-8 md:gap-12 relative z-10">
         <XPCard />
         <StatCard />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
           <DailyGoals />
           <div className="flex flex-col gap-8 md:gap-10">

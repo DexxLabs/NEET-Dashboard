@@ -219,8 +219,12 @@ export const FocusTimer = () => {
   const totalPct = 100 - ((timeLeft / (customMins * 60)) * 100);
   const flowPct = Math.min(100, (focusSeconds / FOCUS_THRESHOLD) * 100);
 
-  const themeColor = theme === 'kawaii' ? (isFlowState ? '#7DDFC3' : '#F4B8C1') : (isFlowState ? '#3D5FC7' : '#F78660'); // blue-light vs coral
-  const themeBg = theme === 'kawaii' ? (isFlowState ? '#E6FFF5' : '#FDE8E8') : (isFlowState ? '#E6EEFF' : '#FFF0EC'); // blue-pale vs coral-pale
+  const themeColor = theme === 'cozy'
+    ? (isFlowState ? '#B5302A' : '#C4A882')
+    : theme === 'kawaii' ? (isFlowState ? '#7DDFC3' : '#F4B8C1') : (isFlowState ? '#3D5FC7' : '#F78660');
+  const themeBg = theme === 'cozy'
+    ? (isFlowState ? 'rgba(181,48,42,0.08)' : '#F5F0E8')
+    : theme === 'kawaii' ? (isFlowState ? '#E6FFF5' : '#FDE8E8') : (isFlowState ? '#E6EEFF' : '#FFF0EC');
 
   return (
     <>
@@ -238,29 +242,30 @@ export const FocusTimer = () => {
           </button>
 
           {!isRunning ? (
-            <div className={`flex items-center gap-2 px-4 py-1.5 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border border-[#F4B8C1] rounded-none font-sans' : 'bg-cream-dark rounded-full'}`}>
-              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : 'text-text-muted'}`}>FOCUS FOR:</span>
-              <input 
-                type="number" 
+            <div className={`flex items-center gap-2 px-4 py-1.5 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border border-[#F4B8C1] rounded-none font-sans' : theme === 'cozy' ? '' : 'bg-cream-dark rounded-full'}`} style={theme === 'cozy' ? { background: '#F5F0E8', border: '1.5px solid #D8CEBC', borderRadius: '6px', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}>
+              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : theme === 'cozy' ? '' : 'text-text-muted'}`} style={theme === 'cozy' ? { color: 'rgba(58,46,42,0.6)' } : {}}>focus for:</span>
+              <input
+                type="number"
                 value={customMins}
                 onChange={handleMinsChange}
-                className={`w-12 bg-transparent font-bold text-center border-b-2 focus:outline-none ${theme === 'kawaii' ? 'text-[#5A3A3A] border-[#F4B8C1] focus:border-[#5A3A3A]' : 'text-coral border-coral-light focus:border-coral'}`}
+                className={`w-12 bg-transparent font-bold text-center border-b-2 focus:outline-none ${theme === 'kawaii' ? 'text-[#5A3A3A] border-[#F4B8C1] focus:border-[#5A3A3A]' : theme === 'cozy' ? '' : 'text-coral border-coral-light focus:border-coral'}`}
+                style={theme === 'cozy' ? { color: '#B5302A', borderBottom: '1.5px solid #B5302A', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}
                 min="15" max="180"
               />
-              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : 'text-text-muted'}`}>MINS</span>
+              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : theme === 'cozy' ? '' : 'text-text-muted'}`} style={theme === 'cozy' ? { color: 'rgba(58,46,42,0.6)' } : {}}>mins</span>
             </div>
           ) : (
-            <div className={`flex items-center gap-2 px-4 py-1.5 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border border-[#F4B8C1] rounded-none font-sans' : 'bg-cream-dark rounded-full'}`}>
-              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : 'text-text-muted'}`}>FOCUSING FOR:</span>
-              <span className={`text-[13px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A]' : 'text-coral'}`}>{customMins}</span>
-              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : 'text-text-muted'}`}>MINS</span>
+            <div className={`flex items-center gap-2 px-4 py-1.5 ${theme === 'kawaii' ? 'bg-[#FDE8E8] border border-[#F4B8C1] rounded-none font-sans' : theme === 'cozy' ? '' : 'bg-cream-dark rounded-full'}`} style={theme === 'cozy' ? { background: '#F5F0E8', border: '1.5px solid #D8CEBC', borderRadius: '6px', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}>
+              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : theme === 'cozy' ? '' : 'text-text-muted'}`} style={theme === 'cozy' ? { color: 'rgba(58,46,42,0.6)' } : {}}>focusing for:</span>
+              <span className={`text-[13px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A]' : theme === 'cozy' ? '' : 'text-coral'}`} style={theme === 'cozy' ? { color: '#B5302A', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}>{customMins}</span>
+              <span className={`text-[12px] font-bold ${theme === 'kawaii' ? 'text-[#5A3A3A] opacity-70' : theme === 'cozy' ? '' : 'text-text-muted'}`} style={theme === 'cozy' ? { color: 'rgba(58,46,42,0.6)' } : {}}>mins</span>
             </div>
           )}
         </div>
 
         <div className="flex flex-col items-center justify-center w-full">
           {/* Status Label Above */}
-          <div className={`text-[13px] font-extrabold uppercase tracking-widest h-5 mb-3 transition-opacity ${isRunning || (timeLeft < customMins * 60 && timeLeft > 0) ? 'opacity-100' : 'opacity-0'} ${theme === 'kawaii' ? (isFlowState ? 'text-[#7DDFC3] font-sans' : 'text-[#5A3A3A] font-sans') : (isFlowState ? 'text-blue-light' : 'text-text-muted')}`}>
+          <div className={`text-[13px] font-extrabold uppercase tracking-widest h-5 mb-3 transition-opacity ${isRunning || (timeLeft < customMins * 60 && timeLeft > 0) ? 'opacity-100' : 'opacity-0'} ${theme === 'cozy' ? '' : theme === 'kawaii' ? (isFlowState ? 'text-[#7DDFC3] font-sans' : 'text-[#5A3A3A] font-sans') : (isFlowState ? 'text-blue-light' : 'text-text-muted')}`} style={theme === 'cozy' ? { color: isFlowState ? '#B5302A' : 'rgba(58,46,42,0.6)', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}>
             {isRunning ? (
               isFlowState ? '🌊 IN FLOW STATE' : '🧱 ENTERING FLOW STATE'
             ) : (timeLeft < customMins * 60 && timeLeft > 0) ? (
@@ -274,7 +279,7 @@ export const FocusTimer = () => {
           <div className="relative flex items-center justify-center w-[240px] h-[240px]">
             {/* Outer Ring (Total Time) */}
             <svg className="absolute inset-0 w-full h-full -rotate-90">
-              <circle cx="120" cy="120" r="110" className={`stroke-cream-dark ${theme === 'kawaii' ? 'stroke-[#FDE8E8]' : ''}`} strokeWidth="8" fill="none" />
+              <circle cx="120" cy="120" r="110" className={`stroke-cream-dark ${theme === 'kawaii' ? 'stroke-[#FDE8E8]' : theme === 'cozy' ? '' : ''}`} stroke={theme === 'cozy' ? '#EDE8DE' : undefined} strokeWidth="8" fill="none" />
               <circle
                 cx="120" cy="120" r="110"
                 stroke={themeColor}
@@ -301,10 +306,10 @@ export const FocusTimer = () => {
             </svg>
             
             <div className="flex flex-col items-center z-10 -mt-2">
-              <div className={`font-extrabold text-[56px] tracking-wide leading-none ${theme === 'kawaii' ? 'font-sans text-[#5A3A3A]' : `font-baloo ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}`}>
+              <div className={`font-extrabold text-[56px] tracking-wide leading-none ${theme === 'cozy' ? '' : theme === 'kawaii' ? 'font-sans text-[#5A3A3A]' : `font-baloo ${isRunning ? (isFlowState ? 'text-blue-light' : 'text-coral') : 'text-text-dark'}`}`} style={theme === 'cozy' ? { color: isRunning ? (isFlowState ? '#B5302A' : '#3A2E2A') : '#3A2E2A', fontFamily: "'Courier Prime','Courier New',monospace", letterSpacing: '0.02em' }:{}}>
                 {formatTime(timeLeft)}
               </div>
-              <div className={`text-[14px] font-bold mt-1 uppercase tracking-widest ${theme === 'kawaii' ? 'text-[#7DDFC3] font-sans' : (isFlowState ? 'text-yellow-deep' : 'text-coral-light')}`}>
+              <div className={`text-[14px] font-bold mt-1 uppercase tracking-widest ${theme === 'cozy' ? '' : theme === 'kawaii' ? 'text-[#7DDFC3] font-sans' : (isFlowState ? 'text-yellow-deep' : 'text-coral-light')}`} style={theme === 'cozy' ? { color: '#C4A882', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}>
                 +{Math.floor(earnedXp)} XP
               </div>
             </div>
@@ -316,34 +321,39 @@ export const FocusTimer = () => {
           <div className="flex gap-2 w-full">
             <button
               onClick={toggleTimer}
-              style={{ 
+              style={theme !== 'cozy' ? {
                 backgroundColor: isRunning ? themeBg : themeColor,
                 color: theme === 'kawaii' ? '#5A3A3A' : (isRunning ? themeColor : '#fff'),
                 borderColor: theme === 'kawaii' ? '#5A3A3A' : themeColor,
+              } : {
+                background: isRunning ? 'rgba(255,255,255,0.80)' : '#B5302A',
+                color: isRunning ? '#B5302A' : '#F5F0E8',
+                border: isRunning ? '1.5px solid #B5302A' : 'none',
+                borderRadius: '6px',
+                fontFamily: "'Courier Prime','Courier New',monospace",
+                boxShadow: !isRunning ? '0 2px 0 #8B1A14' : 'none',
               }}
-              className={`flex-1 py-3 font-bold text-[14px] transition-all border-2 ${theme === 'kawaii' ? 'rounded-none font-sans active:translate-y-[2px]' : `rounded-xl ${!isRunning && 'shadow-[0_4px_0_#A03D20] active:translate-y-[4px] active:shadow-none hover:opacity-90'}`} ${theme === 'kawaii' && !isRunning && 'shadow-[2px_2px_0_#5A3A3A] active:shadow-none'}`}
+              className={`flex-1 py-3 font-bold text-[14px] transition-all ${theme !== 'cozy' ? `border-2 ${theme === 'kawaii' ? 'rounded-none font-sans active:translate-y-[2px]' : `rounded-xl ${!isRunning && 'shadow-[0_4px_0_#A03D20] active:translate-y-[4px] active:shadow-none hover:opacity-90'}`} ${theme === 'kawaii' && !isRunning && 'shadow-[2px_2px_0_#5A3A3A] active:shadow-none'}` : 'active:translate-y-[1px]'}`}
             >
-              {isRunning ? 'PAUSE' : 'START FOCUS'}
+              {isRunning ? (theme === 'cozy' ? 'pause' : 'PAUSE') : (theme === 'cozy' ? 'start focus' : 'START FOCUS')}
             </button>
             
             <button
               onClick={handleReset}
-              className={`px-5 py-3 font-bold text-[14px] transition-all border-2 ${theme === 'kawaii' ? 'bg-white border-[#5A3A3A] text-[#5A3A3A] font-sans rounded-none shadow-[2px_2px_0_rgba(90,58,58,0.2)] active:translate-y-[2px] active:shadow-none' : 'rounded-xl border-cream-dark text-text-muted hover:bg-cream-dark hover:text-text-dark'}`}
+              className={`px-5 py-3 font-bold text-[14px] transition-all ${theme !== 'cozy' ? `border-2 ${theme === 'kawaii' ? 'bg-white border-[#5A3A3A] text-[#5A3A3A] font-sans rounded-none shadow-[2px_2px_0_rgba(90,58,58,0.2)] active:translate-y-[2px] active:shadow-none' : 'rounded-xl border-cream-dark text-text-muted hover:bg-cream-dark hover:text-text-dark'}` : 'active:translate-y-[1px]'}`}
+              style={theme === 'cozy' ? { background: '#EDE8DE', border: '1.5px solid #D8CEBC', borderRadius: '6px', color: '#3A2E2A', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}
             >
-              RESET
+              {theme === 'cozy' ? 'reset' : 'RESET'}
             </button>
           </div>
           
           <button
             onClick={handleDistracted}
             disabled={!isRunning}
-            className={`w-full py-2 font-bold text-[11px] transition-all border-2 uppercase ${theme === 'kawaii' ? 'border-[#5A3A3A] font-sans rounded-none text-[#5A3A3A]' : 'border-cream-dark rounded-xl'} ${
-              isRunning
-                ? (theme === 'kawaii' ? 'bg-[#FDE8E8] shadow-[2px_2px_0_rgba(90,58,58,0.2)] active:translate-y-[2px] active:shadow-none' : 'text-text-muted hover:bg-cream-dark hover:text-text-dark')
-                : 'opacity-0 pointer-events-none'
-            }`}
+            className={`w-full py-2 font-bold text-[11px] transition-all uppercase ${theme !== 'cozy' ? `border-2 ${theme === 'kawaii' ? 'border-[#5A3A3A] font-sans rounded-none text-[#5A3A3A]' : 'border-cream-dark rounded-xl'} ${isRunning ? (theme === 'kawaii' ? 'bg-[#FDE8E8] shadow-[2px_2px_0_rgba(90,58,58,0.2)] active:translate-y-[2px] active:shadow-none' : 'text-text-muted hover:bg-cream-dark hover:text-text-dark') : 'opacity-0 pointer-events-none'}` : (isRunning ? 'active:translate-y-[1px]' : 'opacity-0 pointer-events-none')}`}
+            style={theme === 'cozy' && isRunning ? { background: '#F5F0E8', border: '1.5px solid #D8CEBC', borderRadius: '6px', color: 'rgba(58,46,42,0.65)', fontFamily: "'Courier Prime','Courier New',monospace" } : {}}
           >
-            I got distracted 😔
+            {theme === 'cozy' ? 'i got distracted 😔' : 'I got distracted 😔'}
           </button>
         </div>
 
@@ -388,7 +398,24 @@ export const FocusTimer = () => {
       {confirmModal && (
         <div className="fixed inset-0 z-[9998] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setConfirmModal(null)} />
-          {theme === 'kawaii' ? (
+          {theme === 'cozy' ? (
+            <div className="relative flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200" style={{ background: '#F5F0E8', border: '1.5px solid #D8CEBC', borderRadius: '8px', width: '320px', boxShadow: '0 8px 32px rgba(58,46,42,0.15)', fontFamily: "'Courier Prime','Courier New',monospace" }}>
+              <div className="flex items-center gap-[6px] px-3 py-2" style={{ background: '#EDE8DE', borderBottom: '1px solid #D8CEBC' }}>
+                {[['#FF5F57','✕'],['#FEBC2E','−'],['#28C840','⤢']].map(([c,sym],i) => (
+                  <div key={i} className="group w-3 h-3 rounded-full flex items-center justify-center cursor-default" style={{ background: c }}><span className="opacity-0 group-hover:opacity-100 text-[6px] font-bold leading-none" style={{ color: '#fff' }}>{sym}</span></div>
+                ))}
+                <span className="text-[11px] mx-auto pr-8" style={{ color: '#8A7A6A' }}>confirm.txt</span>
+              </div>
+              <div className="p-5">
+                <div className="text-center text-4xl mb-3">{confirmModal.emoji}</div>
+                <p className="text-center text-[14px] font-bold leading-relaxed mb-6" style={{ color: '#3A2E2A' }}>{confirmModal.message}</p>
+                <div className="flex gap-2">
+                  <button onClick={() => setConfirmModal(null)} className="flex-1 py-2.5 font-bold text-[13px] cursor-pointer transition-all active:translate-y-[1px]" style={{ background: '#EDE8DE', border: '1.5px solid #D8CEBC', borderRadius: '6px', color: '#3A2E2A' }}>cancel</button>
+                  <button onClick={confirmModal.onConfirm} className="flex-[1.5] py-2.5 font-bold text-[13px] cursor-pointer transition-all active:translate-y-[1px]" style={{ background: '#B5302A', border: 'none', borderRadius: '6px', color: '#F5F0E8', boxShadow: '0 2px 0 #8B1A14' }}>yes, i'm sure</button>
+                </div>
+              </div>
+            </div>
+          ) : theme === 'kawaii' ? (
             <div className="relative bg-white border-2 border-[#F4B8C1] shadow-[4px_4px_0_rgba(244,184,193,0.5)] w-full max-w-[320px] flex flex-col animate-in fade-in zoom-in-95 duration-200">
               <div className="bg-[#F4B8C1] px-2 py-1 flex items-center justify-between border-b-2 border-[#F4B8C1]">
                 <div className="text-[#5A3A3A] font-bold text-[12px] tracking-wide font-sans">confirm.exe</div>
