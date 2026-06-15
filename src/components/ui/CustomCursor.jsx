@@ -85,16 +85,10 @@ export const CustomCursor = () => {
 
     const onDown = () => {
       gsap.to(dot, { scale: 2.5, duration: 0.15 });
-      if (kittyImgRef.current) {
-        gsap.to(kittyImgRef.current, { scale: 0.8, duration: 0.15 });
-      }
     };
 
     const onUp = () => {
       gsap.to(dot, { scale: 1, duration: 0.15 });
-      if (kittyImgRef.current) {
-        gsap.to(kittyImgRef.current, { scale: 1, duration: 0.4, ease: "elastic.out(1.5, 0.4)" });
-      }
     };
 
     document.body.addEventListener('pointermove', onMove);
@@ -145,18 +139,24 @@ export const CustomCursor = () => {
           </div>
 
           <div 
-            className="absolute"
-            style={{ transform: 'translate(-50%, 6px)' }}
+            style={{ 
+              position: 'absolute', 
+              top: '0px', 
+              left: '0px', 
+              transform: 'translate(-50%, 6px)' 
+            }}
           >
             <img 
               ref={kittyImgRef}
               src="/hellokitty.png" 
               alt="Hello Kitty" 
-              className="w-[32px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
               draggable="false"
               style={{ 
-                transformOrigin: 'bottom center', // lean from her feet
-                willChange: 'transform'
+                width: '32px',
+                height: 'auto',
+                transformOrigin: 'bottom center',
+                willChange: 'transform',
+                filter: 'drop-shadow(0px 4px 6px rgba(58,46,42,0.25))'
               }}
             />
           </div>
