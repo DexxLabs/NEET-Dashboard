@@ -30,21 +30,25 @@ export const CustomCursor = () => {
     let lastX = window.innerWidth / 2;
     let rotation = 0;
     let animationFrame;
+    
+    // State for smooth trailing
+    let currentX = window.innerWidth / 2;
+    let currentY = window.innerHeight / 2;
+    let targetX = window.innerWidth / 2;
+    let targetY = window.innerHeight / 2;
+    let isDown = false;
 
     const onMove = (e) => {
       // Instantly position the dot
       if (dotRef.current) {
-        dotRef.current.style.left = `${e.clientX}px`;
-        dotRef.current.style.top = `${e.clientY}px`;
+        dotRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%) scale(${isDown ? 2.5 : 1})`;
       }
 
-      // Position the chaser (CSS transitions handle the delay)
-      if (chaserRef.current) {
-        chaserRef.current.style.left = `${e.clientX}px`;
-        chaserRef.current.style.top = `${e.clientY}px`;
-      }
+      // Update target for the chaser to move towards
+      targetX = e.clientX;
+      targetY = e.clientY;
 
-      // Calculate leaning physics based on mouse movement speed
+      // Calculate leaning physics based on horizontal movement speed
       const dx = e.clientX - lastX;
       lastX = e.clientX;
       
@@ -57,22 +61,33 @@ export const CustomCursor = () => {
     };
 
     const physicsLoop = () => {
-      // Spring back to upright
+      // 1. Spring back rotation to upright
       rotation *= 0.85; // Damping
       
       if (kittyInnerRef.current) {
         kittyInnerRef.current.style.transform = `rotate(${rotation}deg)`;
       }
       
+      // 2. LERP (Linear Interpolation) for buttery smooth position trailing
+      // The lower the multiplier (0.08), the "heavier" and slower the delay.
+      currentX += (targetX - currentX) * 0.08;
+      currentY += (targetY - currentY) * 0.08;
+      
+      if (chaserRef.current) {
+        chaserRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      }
+      
       animationFrame = requestAnimationFrame(physicsLoop);
     };
 
     const onDown = () => {
-      if (dotRef.current) dotRef.current.style.transform = 'translate(-50%, -50%) scale(2.5)';
+      isDown = true;
+      if (dotRef.current) dotRef.current.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%) scale(2.5)`;
     };
 
     const onUp = () => {
-      if (dotRef.current) dotRef.current.style.transform = 'translate(-50%, -50%) scale(1)';
+      isDown = false;
+      if (dotRef.current) dotRef.current.style.transform = `translate3d(${targetX}px, ${targetY}px, 0) translate(-50%, -50%) scale(1)`;
     };
 
     window.addEventListener('pointermove', onMove);
@@ -97,8 +112,9 @@ export const CustomCursor = () => {
           theme === 'kawaii' ? 'bg-[#FF91A4]' : theme === 'cozy' ? 'bg-[#B5302A]' : 'bg-coral'
         }`}
         style={{ 
-          transform: 'translate(-50%, -50%) scale(1)', 
-          willChange: 'left, top, transform' 
+          top: 0, left: 0,
+          transform: 'translate3d(-50%, -50%, 0) scale(1)', 
+          willChange: 'transform' 
         }}
       />
 
@@ -106,11 +122,11 @@ export const CustomCursor = () => {
       {theme === 'cozy' && (
         <div 
           ref={chaserRef}
-          className="fixed z-[10001] pointer-events-none transition-all duration-[600ms] ease-out"
+          className="fixed z-[10001] pointer-events-none"
           style={{ 
-            willChange: 'left, top',
-            top: '-100px', // Start off screen to prevent flash
-            left: '50%'
+            top: 0, left: 0,
+            willChange: 'transform',
+            transform: 'translate3d(-100px, -100px, 0)' // Start off screen
           }}
         >
           {/* Mascot Speech Bubble */}
