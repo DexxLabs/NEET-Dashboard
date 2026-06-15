@@ -139,7 +139,7 @@ export const CustomCursor = () => {
         >
           {/* Mascot Speech Bubble */}
           <div 
-            className="absolute bottom-[10px] left-0 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
+            className="absolute bottom-[15px] left-0 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
             style={{ 
               fontFamily: "'Courier Prime','Courier New',monospace",
               opacity: message ? 1 : 0,
@@ -154,7 +154,7 @@ export const CustomCursor = () => {
             ref={kittyInnerRef}
             className="absolute"
             style={{ 
-              left: '-12px', // Compensate for visual center offset in PNG asset
+              left: '-18px', // Scaled offset for 72px width
               top: '5px',
               transformOrigin: 'bottom center',
               transition: 'transform 0.1s linear' // smooth out the frame ticks
@@ -163,7 +163,7 @@ export const CustomCursor = () => {
             <img 
               src="/hellokitty.png" 
               alt="Hello Kitty Companion" 
-              className="w-[48px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
+              className="w-[72px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
               draggable="false"
             />
           </div>
