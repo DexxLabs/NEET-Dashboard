@@ -1,163 +1,147 @@
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTheme } from '../../store/useTheme';
 import { useMascot } from '../../store/useMascot';
 
 export const CustomCursor = () => {
-  const wrapperRef = useRef(null);
   const dotRef = useRef(null);
-  const chaserWrapperRef = useRef(null);
-  const kittyImgRef = useRef(null);
+  const chaserRef = useRef(null);
+  const kittyInnerRef = useRef(null);
   const theme = useTheme(state => state.theme);
   const message = useMascot(state => state.message);
-  const [lastMessage, setLastMessage] = React.useState('');
   
+  // Track last message for smooth fade-out
+  const [lastMessage, setLastMessage] = useState('');
   useEffect(() => {
     if (message) setLastMessage(message);
   }, [message]);
-  
-  // Track last known mouse position for smooth re-attachment
-  const lastMousePos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-  
-  useEffect(() => {
-    // Clear any stuck inline display styles from previous hot-reloads
-    if (wrapperRef.current) wrapperRef.current.style.display = '';
-    if (chaserWrapperRef.current) chaserWrapperRef.current.style.display = '';
 
-    const wrapper = wrapperRef.current;
-    const dot = dotRef.current;
-    
-    // Initialize chaser at current mouse position instantly so she doesn't start at 0,0
-    if (chaserWrapperRef.current) {
-      gsap.set(chaserWrapperRef.current, { x: lastMousePos.current.x, y: lastMousePos.current.y });
+  useEffect(() => {
+    // Mobile touch devices fallback
+    if (window.matchMedia("(pointer: coarse)").matches) {
+      if (dotRef.current) dotRef.current.style.display = 'none';
+      if (chaserRef.current) chaserRef.current.style.display = 'none';
+      return;
     }
-    gsap.set(wrapper, { x: lastMousePos.current.x, y: lastMousePos.current.y });
-    
-    // Physics state for leaning
-    let currentRotation = 0;
-    let rotationVelocity = 0;
-    let lastX = lastMousePos.current.x;
+
+    // Force clear any stuck HMR styles
+    if (dotRef.current) dotRef.current.style.display = 'block';
+    if (chaserRef.current) chaserRef.current.style.display = 'block';
+
+    let lastX = window.innerWidth / 2;
+    let rotation = 0;
+    let animationFrame;
 
     const onMove = (e) => {
-      lastMousePos.current = { x: e.clientX, y: e.clientY };
-      // Move the cursor dot instantly
-      gsap.set(wrapper, { x: e.clientX, y: e.clientY });
-
-      // Make Hello Kitty chase the cursor with a delay
-      if (chaserWrapperRef.current) {
-        gsap.to(chaserWrapperRef.current, {
-          x: e.clientX,
-          y: e.clientY,
-          duration: 0.7, // the requested slight delay
-          ease: "power2.out"
-        });
-
-        // Add momentum based on movement speed (lean into the run)
-        const dx = e.clientX - lastX;
-        rotationVelocity += dx * 0.4;
+      // Instantly position the dot
+      if (dotRef.current) {
+        dotRef.current.style.left = `${e.clientX}px`;
+        dotRef.current.style.top = `${e.clientY}px`;
       }
-      
+
+      // Position the chaser (CSS transitions handle the delay)
+      if (chaserRef.current) {
+        chaserRef.current.style.left = `${e.clientX}px`;
+        chaserRef.current.style.top = `${e.clientY}px`;
+      }
+
+      // Calculate leaning physics based on mouse movement speed
+      const dx = e.clientX - lastX;
       lastX = e.clientX;
+      
+      // Add lean based on horizontal movement
+      rotation += dx * 0.5;
+      
+      // Hard cap the rotation
+      if (rotation > 45) rotation = 45;
+      if (rotation < -45) rotation = -45;
     };
 
-    const tick = () => {
-      if (!kittyImgRef.current) return;
+    const physicsLoop = () => {
+      // Spring back to upright
+      rotation *= 0.85; // Damping
       
-      // Spring physics: pull back upright
-      rotationVelocity -= currentRotation * 0.12; // stiffness
-      rotationVelocity *= 0.82; // damping
-      
-      currentRotation += rotationVelocity;
-      
-      // Hard bounds with bounce
-      if (currentRotation > 45) {
-        currentRotation = 45;
-        rotationVelocity *= -0.4;
-      } else if (currentRotation < -45) {
-        currentRotation = -45;
-        rotationVelocity *= -0.4;
+      if (kittyInnerRef.current) {
+        kittyInnerRef.current.style.transform = `rotate(${rotation}deg)`;
       }
       
-      gsap.set(kittyImgRef.current, { rotation: currentRotation });
+      animationFrame = requestAnimationFrame(physicsLoop);
     };
-
-    gsap.ticker.add(tick);
 
     const onDown = () => {
-      gsap.to(dot, { scale: 2.5, duration: 0.15 });
+      if (dotRef.current) dotRef.current.style.transform = 'translate(-50%, -50%) scale(2.5)';
     };
 
     const onUp = () => {
-      gsap.to(dot, { scale: 1, duration: 0.15 });
+      if (dotRef.current) dotRef.current.style.transform = 'translate(-50%, -50%) scale(1)';
     };
 
-    document.body.addEventListener('pointermove', onMove);
-    document.body.addEventListener('pointerdown', onDown);
-    document.body.addEventListener('pointerup', onUp);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointerup', onUp);
+    physicsLoop();
 
     return () => {
-      document.body.removeEventListener('pointermove', onMove);
-      document.body.removeEventListener('pointerdown', onDown);
-      document.body.removeEventListener('pointerup', onUp);
-      gsap.ticker.remove(tick);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointerup', onUp);
+      cancelAnimationFrame(animationFrame);
     };
-  }, [theme]); // re-run if theme changes so refs attach properly
+  }, [theme]);
 
   return (
     <>
-      {/* The Dot Wrapper (moves instantly) */}
+      {/* The Dot Wrapper */}
       <div 
-        ref={wrapperRef} 
-        className="fixed top-0 left-0 z-[10002] pointer-events-none hidden md:block"
-        style={{ willChange: 'transform' }}
-      >
-        <div 
-          ref={dotRef}
-          className={`absolute w-[8px] h-[8px] rounded-full -translate-x-1/2 -translate-y-1/2 shadow-sm ${theme === 'kawaii' ? 'bg-[#FF91A4]' : theme === 'cozy' ? 'bg-[#B5302A]' : 'bg-coral'}`} 
-        />
-      </div>
+        ref={dotRef} 
+        className={`fixed z-[10002] pointer-events-none w-[8px] h-[8px] rounded-full transition-transform duration-150 ease-out hidden md:block ${
+          theme === 'kawaii' ? 'bg-[#FF91A4]' : theme === 'cozy' ? 'bg-[#B5302A]' : 'bg-coral'
+        }`}
+        style={{ 
+          transform: 'translate(-50%, -50%) scale(1)', 
+          willChange: 'left, top, transform' 
+        }}
+      />
 
-      {/* The Chasing Hello Kitty (Cozy Theme Only) */}
+      {/* The Chasing Hello Kitty */}
       {theme === 'cozy' && (
         <div 
-          ref={chaserWrapperRef}
-          className="fixed top-0 left-0 z-[10001] pointer-events-none"
-          style={{ willChange: 'transform' }}
+          ref={chaserRef}
+          className="fixed z-[10001] pointer-events-none transition-all duration-[600ms] ease-out"
+          style={{ 
+            willChange: 'left, top',
+            top: '-100px', // Start off screen to prevent flash
+            left: '50%'
+          }}
         >
           {/* Mascot Speech Bubble */}
           <div 
-            className="absolute bottom-[40px] left-1/2 -translate-x-1/2 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
+            className="absolute bottom-[30px] left-1/2 -translate-x-1/2 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
             style={{ 
               fontFamily: "'Courier Prime','Courier New',monospace",
               opacity: message ? 1 : 0,
-              transform: `translateX(-50%) scale(${message ? 1 : 0.8}) translateY(${message ? '0' : '10px'})`,
-              pointerEvents: message ? 'auto' : 'none'
+              transform: `translateX(-50%) scale(${message ? 1 : 0.8}) translateY(${message ? '0' : '10px'})`
             }}
           >
             {lastMessage}
             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#F5F0E8] border-b-[1.5px] border-r-[1.5px] border-[#D8CEBC] rotate-45"></div>
           </div>
 
+          {/* Kitty Image with Physics Wrapper */}
           <div 
+            ref={kittyInnerRef}
+            className="absolute"
             style={{ 
-              position: 'absolute', 
-              top: '0px', 
-              left: '0px', 
-              transform: 'translate(-50%, 6px)' 
+              left: '-16px', // exactly half of 32px width to center her
+              top: '6px',
+              transformOrigin: 'bottom center',
+              transition: 'transform 0.1s linear' // smooth out the frame ticks
             }}
           >
             <img 
-              ref={kittyImgRef}
               src="/hellokitty.png" 
-              alt="Hello Kitty" 
+              alt="Hello Kitty Companion" 
+              className="w-[32px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
               draggable="false"
-              style={{ 
-                width: '32px',
-                height: 'auto',
-                transformOrigin: 'bottom center',
-                willChange: 'transform',
-                filter: 'drop-shadow(0px 4px 6px rgba(58,46,42,0.25))'
-              }}
             />
           </div>
         </div>
