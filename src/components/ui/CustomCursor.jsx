@@ -73,7 +73,7 @@ export const CustomCursor = () => {
       rotation *= 0.85; // Damping
       
       if (kittyInnerRef.current) {
-        kittyInnerRef.current.style.transform = `translateX(-50%) rotate(${rotation}deg)`;
+        kittyInnerRef.current.style.transform = `rotate(${rotation}deg)`;
       }
       
       // 2. LERP (Linear Interpolation) for buttery smooth position trailing
@@ -154,7 +154,7 @@ export const CustomCursor = () => {
             ref={kittyInnerRef}
             className="absolute"
             style={{ 
-              left: '0px', 
+              left: '-24px', // 48px width / 2
               top: '-10px',
               transformOrigin: 'bottom center',
               transition: 'transform 0.1s linear' // smooth out the frame ticks
