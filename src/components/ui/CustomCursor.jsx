@@ -23,9 +23,17 @@ export const CustomCursor = () => {
       return;
     }
 
-    // Force clear any stuck HMR styles
-    if (dotRef.current) dotRef.current.style.display = 'block';
-    if (chaserRef.current) chaserRef.current.style.display = 'block';
+    // Force clear any stuck HMR styles from previous imperative code
+    if (dotRef.current) {
+      dotRef.current.style.display = 'block';
+      dotRef.current.style.left = '0px';
+      dotRef.current.style.top = '0px';
+    }
+    if (chaserRef.current) {
+      chaserRef.current.style.display = 'block';
+      chaserRef.current.style.left = '0px';
+      chaserRef.current.style.top = '0px';
+    }
 
     let lastX = window.innerWidth / 2;
     let rotation = 0;
