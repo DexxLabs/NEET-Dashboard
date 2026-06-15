@@ -4,6 +4,7 @@ import { db } from '../firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { INITIAL_STATE, DEFAULT_TASKS } from '../utils/constants';
 import { getLogicalDate } from '../utils/dateUtils';
+import { useMascot } from './useMascot';
 
 const checkBadges = (state, partial = {}) => {
   const s = { ...state, ...partial };
@@ -145,6 +146,7 @@ export const useStore = create(
           let streakToast = null;
           if (!isDone) {
              get().showToast(`🎉 +${xp} XP! Keep going Nitu!`);
+             useMascot.getState().say('Great job! One step closer! ✨');
              if (totalDone >= 2 && !state.streakClaimedToday && state.streak < 15) {
                newStreak = state.streak + 1;
                newStreakClaimed = true;
@@ -170,7 +172,10 @@ export const useStore = create(
           let newXP = isDone ? Math.max(0, state.xp - xp) : state.xp + xp;
           let newQuestsDone = isDone ? Math.max(0, state.questsDone - 1) : state.questsDone + 1;
           
-          if (!isDone) get().showToast(`✅ Quest done! +${xp} XP!`);
+          if (!isDone) {
+            get().showToast(`✅ Quest done! +${xp} XP!`);
+            useMascot.getState().say('Yay! Quest completed! 🎉');
+          }
 
           const partial = { xp: newXP, questsDone: newQuestsDone, doneQuests: newDone };
           const badgeUpdates = checkBadges(state, partial);
@@ -188,6 +193,7 @@ export const useStore = create(
           const partial = { scores: [...state.scores, newScore], xp: state.xp + 50 };
           
           get().showToast(`📊 Logged! Total: ${total}/720 · +50 XP`);
+          useMascot.getState().say('Woohoo! Your score is safely logged! 📝');
           
           const badgeUpdates = checkBadges(state, partial);
           if (badgeUpdates.newToastMsg) setTimeout(() => get().showToast(badgeUpdates.newToastMsg), 1500);

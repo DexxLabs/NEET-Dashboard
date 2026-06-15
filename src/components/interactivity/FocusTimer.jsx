@@ -2,10 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card } from '../ui/Card';
 import { useStore } from '../../store/useStore';
 import { useTheme } from '../../store/useTheme';
+import { useMascot } from '../../store/useMascot';
 
 export const FocusTimer = () => {
   const addXP = useStore((state) => state.addXP);
   const theme = useTheme((state) => state.theme);
+  const { say, detach, attach } = useMascot();
 
   const loadState = () => {
     try {
@@ -96,6 +98,7 @@ export const FocusTimer = () => {
 
           if (newlyReachedFlow) {
             addXP(silentXpToAdd, '🎉 Congratulations! You have entered Flow State!');
+            say("You are in the zone! Keep going, guddi!", 5000);
           } else if (silentXpToAdd > 0) {
             addXP(silentXpToAdd, null);
           }
@@ -119,6 +122,8 @@ export const FocusTimer = () => {
              setTimeLeft(customMins * 60);
              setFocusSeconds(0);
              setEarnedXp(0);
+             attach();
+             say("You did it! Great focus session!");
           }
         }
       }, 500);
@@ -155,6 +160,8 @@ export const FocusTimer = () => {
       setFocusSeconds(0);
       setEarnedXp(0);
       setIsRunning(true);
+      detach();
+      say("Time to focus! I'll sit right here.", 5000);
     } else if (isRunning) {
       if (!isFlowState) {
         setConfirmModal({
@@ -164,13 +171,19 @@ export const FocusTimer = () => {
             setIsRunning(false);
             setFocusSeconds(0);
             setConfirmModal(null);
+            attach();
+            say("It's okay, we can try again!");
           }
         });
       } else {
         setIsRunning(false);
+        attach();
+        say("Good job! Back to following you.");
       }
     } else {
       setIsRunning(true);
+      detach();
+      say("Time to focus! I'll sit right here.", 5000);
     }
   };
 
@@ -184,6 +197,8 @@ export const FocusTimer = () => {
         setFocusSeconds(0);
         setEarnedXp(0);
         setConfirmModal(null);
+        attach();
+        say("Timer reset! Back to exploring.");
       }
     });
   };
@@ -195,6 +210,7 @@ export const FocusTimer = () => {
       onConfirm: () => {
         setFocusSeconds(0);
         setConfirmModal(null);
+        say("Don't let the phone distract you! Focus!", 4000);
       }
     });
   };
@@ -229,7 +245,7 @@ export const FocusTimer = () => {
   return (
     <>
     <Card title="🌊 Flow State Timer" sub="Survive 10 mins to enter Flow." className="h-full">
-      <div ref={containerRef} className="flex flex-col items-center justify-start h-full gap-6 pt-6 pb-2">
+      <div ref={containerRef} id="focus-timer" className="flex flex-col items-center justify-start h-full gap-6 pt-6 pb-2">
         
         {/* Custom Duration Input */}
         <div className="h-8 flex items-center justify-center shrink-0 w-full relative">
