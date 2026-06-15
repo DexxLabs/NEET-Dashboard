@@ -17,34 +17,46 @@ export const CustomCursor = () => {
     const wrapper = wrapperRef.current;
     const dot = dotRef.current;
     
-    let lastX = 0;
-    let timeout;
+    // Physics state
+    let currentRotation = 0;
+    let rotationVelocity = 0;
+    let lastX = window.innerWidth / 2;
 
     const onMove = (e) => {
       // Move the entire wrapper instantly
       gsap.set(wrapper, { x: e.clientX, y: e.clientY });
 
-      // Calculate swinging physics for the keychain
+      // Add momentum based on movement speed
       if (keychainRef.current) {
         const dx = e.clientX - lastX;
-        let targetRotation = dx * 1.2; // Swing multiplier (positive dx = swings right/left opposite, wait: dragging right means bottom drags left, so negative rotation! Let's use dx * -1.2)
-        targetRotation = Math.max(-50, Math.min(50, targetRotation * -1));
-        
-        gsap.to(keychainRef.current, {
-          rotation: targetRotation,
-          duration: 0.1,
-          ease: "none"
-        });
-
-        // Reset to 0 with a bounce if stopped moving
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-          gsap.to(keychainRef.current, { rotation: 0, duration: 1.2, ease: "elastic.out(1.5, 0.2)" });
-        }, 30);
+        rotationVelocity -= dx * 0.4;
       }
       
       lastX = e.clientX;
     };
+
+    const tick = () => {
+      if (!keychainRef.current) return;
+      
+      // Spring physics formula
+      rotationVelocity -= currentRotation * 0.08; // stiffness (pull back to center)
+      rotationVelocity *= 0.85; // damping (friction)
+      
+      currentRotation += rotationVelocity;
+      
+      // Hard bounds with bounce
+      if (currentRotation > 75) {
+        currentRotation = 75;
+        rotationVelocity *= -0.5;
+      } else if (currentRotation < -75) {
+        currentRotation = -75;
+        rotationVelocity *= -0.5;
+      }
+      
+      gsap.set(keychainRef.current, { rotation: currentRotation });
+    };
+
+    gsap.ticker.add(tick);
 
     const onDown = () => {
       gsap.to(dot, { scale: 2.5, duration: 0.15 });
@@ -62,7 +74,7 @@ export const CustomCursor = () => {
       document.body.removeEventListener('pointermove', onMove);
       document.body.removeEventListener('pointerdown', onDown);
       document.body.removeEventListener('pointerup', onUp);
-      clearTimeout(timeout);
+      gsap.ticker.remove(tick);
     };
   }, [theme]); // re-run if theme changes so keychainRef attaches properly
 
