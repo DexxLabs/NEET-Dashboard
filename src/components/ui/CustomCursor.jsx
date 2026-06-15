@@ -9,7 +9,6 @@ export const CustomCursor = () => {
   const chaserWrapperRef = useRef(null);
   const kittyImgRef = useRef(null);
   const theme = useTheme(state => state.theme);
-  const isDetached = useMascot(state => state.isDetached);
   const message = useMascot(state => state.message);
   const [lastMessage, setLastMessage] = React.useState('');
   
@@ -40,8 +39,8 @@ export const CustomCursor = () => {
       // Move the cursor dot instantly
       gsap.set(wrapper, { x: e.clientX, y: e.clientY });
 
-      // Only chase if not detached to the focus timer
-      if (!useMascot.getState().isDetached && chaserWrapperRef.current) {
+      // Make Hello Kitty chase the cursor with a delay
+      if (chaserWrapperRef.current) {
         gsap.to(chaserWrapperRef.current, {
           x: e.clientX,
           y: e.clientY,
@@ -105,50 +104,6 @@ export const CustomCursor = () => {
       gsap.ticker.remove(tick);
     };
   }, [theme]); // re-run if theme changes so refs attach properly
-
-  // Handle Mascot Detaching / Attaching animation
-  useEffect(() => {
-    if (!chaserWrapperRef.current) return;
-
-    let updateEvent;
-
-    if (isDetached) {
-      const updatePosition = (duration = 0) => {
-        const timerEl = document.getElementById('focus-timer');
-        if (timerEl && chaserWrapperRef.current) {
-          const rect = timerEl.getBoundingClientRect();
-          // Tween her to sit on the top-right corner of the focus timer
-          gsap.to(chaserWrapperRef.current, {
-            x: rect.right - 50,
-            y: rect.top - 10,
-            duration: duration,
-            ease: duration > 0 ? "power3.inOut" : "none"
-          });
-        }
-      };
-
-      updatePosition(1.2); // smooth initial flight
-
-      updateEvent = () => updatePosition(0); // instant follow on scroll/resize
-      window.addEventListener('scroll', updateEvent, true); // true for capture phase to catch all scrolls
-      window.addEventListener('resize', updateEvent);
-    } else {
-      // Re-attach: tween back to the last known mouse position so she catches up smoothly
-      gsap.to(chaserWrapperRef.current, {
-        x: lastMousePos.current.x,
-        y: lastMousePos.current.y,
-        duration: 0.8,
-        ease: "power2.out"
-      });
-    }
-
-    return () => {
-      if (updateEvent) {
-        window.removeEventListener('scroll', updateEvent, true);
-        window.removeEventListener('resize', updateEvent);
-      }
-    };
-  }, [isDetached]);
 
   return (
     <>
