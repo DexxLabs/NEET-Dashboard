@@ -20,6 +20,10 @@ export const CustomCursor = () => {
   const lastMousePos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   
   useEffect(() => {
+    // Clear any stuck inline display styles from previous hot-reloads
+    if (wrapperRef.current) wrapperRef.current.style.display = '';
+    if (chaserWrapperRef.current) chaserWrapperRef.current.style.display = '';
+
     const wrapper = wrapperRef.current;
     const dot = dotRef.current;
     
