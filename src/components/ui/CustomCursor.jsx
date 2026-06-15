@@ -20,12 +20,6 @@ export const CustomCursor = () => {
   const lastMousePos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
   
   useEffect(() => {
-    if (window.matchMedia("(pointer: coarse)").matches) {
-      if (wrapperRef.current) wrapperRef.current.style.display = 'none';
-      if (chaserWrapperRef.current) chaserWrapperRef.current.style.display = 'none';
-      return;
-    }
-
     const wrapper = wrapperRef.current;
     const dot = dotRef.current;
     
@@ -129,7 +123,7 @@ export const CustomCursor = () => {
       {theme === 'cozy' && (
         <div 
           ref={chaserWrapperRef}
-          className="fixed top-0 left-0 z-[10001] pointer-events-none hidden md:flex flex-col items-center justify-end"
+          className="fixed top-0 left-0 z-[10001] pointer-events-none"
           style={{ willChange: 'transform' }}
         >
           {/* Mascot Speech Bubble */}
