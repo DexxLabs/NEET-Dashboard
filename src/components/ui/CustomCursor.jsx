@@ -77,9 +77,9 @@ export const CustomCursor = () => {
       }
       
       // 2. LERP (Linear Interpolation) for buttery smooth position trailing
-      // The lower the multiplier (0.08), the "heavier" and slower the delay.
-      currentX += (targetX - currentX) * 0.08;
-      currentY += (targetY - currentY) * 0.08;
+      // Reduced the multiplier to make her slower and increase the delay
+      currentX += (targetX - currentX) * 0.035;
+      currentY += (targetY - currentY) * 0.035;
       
       if (chaserRef.current) {
         chaserRef.current.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
@@ -139,7 +139,7 @@ export const CustomCursor = () => {
         >
           {/* Mascot Speech Bubble */}
           <div 
-            className="absolute bottom-[30px] left-1/2 -translate-x-1/2 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
+            className="absolute bottom-[5px] left-1/2 -translate-x-1/2 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
             style={{ 
               fontFamily: "'Courier Prime','Courier New',monospace",
               opacity: message ? 1 : 0,
