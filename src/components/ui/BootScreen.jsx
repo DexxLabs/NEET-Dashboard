@@ -5,7 +5,7 @@ const COZY_MESSAGES = [
   'loading warm vibes...',
   'placing stickers...',
   'brewing something cozy...',
-  'almost there, bestie...',
+  'almost there, guddi...',
 ];
 
 // ─── Cozy Boot Screen ────────────────────────────────────────────

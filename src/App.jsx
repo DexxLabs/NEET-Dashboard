@@ -69,8 +69,8 @@ function App() {
       {/* Sticker decorations — cozy only, behind everything */}
       {theme === 'cozy' && <CozyStickers />}
 
-      {/* Non-cozy cursor */}
-      {theme !== 'cozy' && <CustomCursor />}
+      {/* Custom cursor (all themes) */}
+      <CustomCursor />
 
       {/* Floating background decorations */}
       {theme === 'kawaii' ? (

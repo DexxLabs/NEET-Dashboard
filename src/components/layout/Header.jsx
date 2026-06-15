@@ -70,7 +70,7 @@ export const Header = () => {
                 Nitu's <span style={{ color: '#B5302A' }}>NEET Quest</span> ✨
               </div>
               <div className="text-[12px] font-mono" style={{ color: 'rgba(58,46,42,0.6)' }}>
-                score 600+ in {daysRemaining} days · you got this, bestie!
+                score 600+ in {daysRemaining} days · you got this, guddi!
               </div>
             </div>
           </div>

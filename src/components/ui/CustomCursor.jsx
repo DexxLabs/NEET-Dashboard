@@ -40,7 +40,7 @@ export const CustomCursor = () => {
   return (
     <div 
       ref={dotRef} 
-      className={`fixed top-0 left-0 w-[8px] h-[8px] rounded-full z-[10001] pointer-events-none -translate-x-1/2 -translate-y-1/2 hidden md:block ${theme === 'kawaii' ? 'bg-[#FF91A4]' : 'bg-coral'}`}
+      className={`fixed top-0 left-0 w-[8px] h-[8px] rounded-full z-[10001] pointer-events-none -translate-x-1/2 -translate-y-1/2 hidden md:block ${theme === 'kawaii' ? 'bg-[#FF91A4]' : theme === 'cozy' ? 'bg-[#B5302A]' : 'bg-coral'}`}
       style={{ willChange: 'transform' }}
     />
   );
