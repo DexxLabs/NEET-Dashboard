@@ -11,6 +11,11 @@ export const CustomCursor = () => {
   const theme = useTheme(state => state.theme);
   const isDetached = useMascot(state => state.isDetached);
   const message = useMascot(state => state.message);
+  const [lastMessage, setLastMessage] = React.useState('');
+  
+  useEffect(() => {
+    if (message) setLastMessage(message);
+  }, [message]);
   
   // Track last known mouse position for smooth re-attachment
   const lastMousePos = useRef({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
@@ -167,25 +172,33 @@ export const CustomCursor = () => {
           style={{ willChange: 'transform' }}
         >
           {/* Mascot Speech Bubble */}
-          {message && (
-            <div className="absolute bottom-[40px] left-1/2 -translate-x-1/2 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center animate-in fade-in slide-in-from-bottom-2 duration-300" style={{ fontFamily: "'Courier Prime','Courier New',monospace" }}>
-              {message}
-              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#F5F0E8] border-b-[1.5px] border-r-[1.5px] border-[#D8CEBC] rotate-45"></div>
-            </div>
-          )}
-
-          <img 
-            ref={kittyImgRef}
-            src="/hellokitty.png" 
-            alt="Hello Kitty" 
-            className="w-[32px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
-            draggable="false"
+          <div 
+            className="absolute bottom-[40px] left-1/2 -translate-x-1/2 min-w-[120px] max-w-[220px] bg-[#F5F0E8] text-[#3A2E2A] text-[12px] font-bold p-2 px-3 rounded-xl border-[1.5px] border-[#D8CEBC] shadow-[0_4px_12px_rgba(58,46,42,0.1)] mb-2 text-center transition-all duration-300 ease-out origin-bottom" 
             style={{ 
-              transform: 'translate(-50%, 6px)', // perfectly centered below the cursor
-              transformOrigin: 'bottom center', // lean from her feet
-              willChange: 'transform'
+              fontFamily: "'Courier Prime','Courier New',monospace",
+              opacity: message ? 1 : 0,
+              transform: `translateX(-50%) scale(${message ? 1 : 0.8}) translateY(${message ? '0' : '10px'})`,
+              pointerEvents: message ? 'auto' : 'none'
             }}
-          />
+          >
+            {lastMessage}
+            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#F5F0E8] border-b-[1.5px] border-r-[1.5px] border-[#D8CEBC] rotate-45"></div>
+          </div>
+
+          {/* Centering wrapper for Kitty to prevent React from overwriting GSAP's inline transforms during re-renders */}
+          <div className="absolute -translate-x-1/2 translate-y-[6px]">
+            <img 
+              ref={kittyImgRef}
+              src="/hellokitty.png" 
+              alt="Hello Kitty" 
+              className="w-[32px] drop-shadow-[0_4px_6px_rgba(58,46,42,0.25)]"
+              draggable="false"
+              style={{ 
+                transformOrigin: 'bottom center', // lean from her feet
+                willChange: 'transform'
+              }}
+            />
+          </div>
         </div>
       )}
     </>
