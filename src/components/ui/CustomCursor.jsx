@@ -144,8 +144,10 @@ export const CustomCursor = () => {
             <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-2.5 h-2.5 bg-[#F5F0E8] border-b-[1.5px] border-r-[1.5px] border-[#D8CEBC] rotate-45"></div>
           </div>
 
-          {/* Centering wrapper for Kitty to prevent React from overwriting GSAP's inline transforms during re-renders */}
-          <div className="absolute left-0 top-0 -translate-x-1/2 translate-y-[6px]">
+          <div 
+            className="absolute"
+            style={{ transform: 'translate(-50%, 6px)' }}
+          >
             <img 
               ref={kittyImgRef}
               src="/hellokitty.png" 
