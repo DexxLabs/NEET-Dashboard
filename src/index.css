@@ -204,14 +204,7 @@ body.cozy {
   body.cozy ::-webkit-scrollbar-thumb:hover { background: #C4A882; }
   body.cozy ::selection { background-color: #C4A882; color: #3A2E2A; }
 
-  /* cozy cursor — allow normal pointer since CustomCursor is only default/kawaii */
-  body.cozy, body.cozy a, body.cozy button,
-  body.cozy select, body.cozy input,
-  body.cozy .cursor-pointer, body.cozy [role="button"] {
-    cursor: auto !important;
-  }
-  body.cozy button, body.cozy [role="button"],
-  body.cozy .cursor-pointer { cursor: pointer !important; }
+
 
   /* macOS traffic light hover labels */
   body.cozy .traffic-dot:hover::after {
