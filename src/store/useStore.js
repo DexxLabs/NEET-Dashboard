@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { db } from '../firebase';
 import { doc, setDoc, onSnapshot } from 'firebase/firestore';
-import { INITIAL_STATE, DEFAULT_TASKS } from '../utils/constants';
+import { INITIAL_STATE, DEFAULT_TASKS, MOCK_TEST_XP_PER_TEST, MOCK_TEST_BONUS_XP, MOCK_TEST_DAILY_GOAL } from '../utils/constants';
 import { getLogicalDate } from '../utils/dateUtils';
 import { useMascot } from './useMascot';
 
@@ -108,7 +108,8 @@ export const useStore = create(
               questsDone: 0,
               dailyTasks: [...DEFAULT_TASKS],
               streakClaimedToday: false,
-              streak: newStreak
+              streak: newStreak,
+              mockTestCount: 0,
             };
           }
           return state;
@@ -229,7 +230,44 @@ export const useStore = create(
 
           return { xp: badgeUpdates.xp, badges: badgeUpdates.badges };
         });
-      }
+      },
+
+      incrementMockTest: () => {
+        set((state) => {
+          const newCount = state.mockTestCount + 1;
+          const isAboveGoal = newCount > MOCK_TEST_DAILY_GOAL;
+          const xpGained = isAboveGoal ? MOCK_TEST_XP_PER_TEST + MOCK_TEST_BONUS_XP : MOCK_TEST_XP_PER_TEST;
+          const partial = { xp: state.xp + xpGained, mockTestCount: newCount };
+          const badgeUpdates = checkBadges(state, partial);
+
+          if (newCount === MOCK_TEST_DAILY_GOAL) {
+            get().showToast(`🎯 Goal reached! ${newCount} mocks done! +${xpGained} XP!`);
+            setTimeout(() => useMascot.getState().say("YOU'RE ON FIRE NITUUUUU, YOU ARE AMAZING!!!! 🔥🔥🔥", 7000), 400);
+          } else if (isAboveGoal) {
+            get().showToast(`🔥 BEYOND THE GOAL! +${xpGained} XP (Bonus!)`);
+            setTimeout(() => useMascot.getState().say("YOU'RE ON FIRE NITUUUUU, YOU ARE AMAZING!!!! 🔥🔥🔥", 7000), 400);
+          } else {
+            get().showToast(`📝 Mock Test #${newCount} done! +${xpGained} XP!`);
+            useMascot.getState().say(`Mock ${newCount} in the bag! Keep crushing it! 💪`);
+          }
+
+          if (badgeUpdates.newToastMsg) setTimeout(() => get().showToast(badgeUpdates.newToastMsg), 2000);
+          return { ...partial, badges: badgeUpdates.badges, xp: badgeUpdates.xp };
+        });
+      },
+
+      decrementMockTest: () => {
+        set((state) => {
+          if (state.mockTestCount === 0) return state;
+          const newCount = state.mockTestCount - 1;
+          const wasAboveGoal = state.mockTestCount > MOCK_TEST_DAILY_GOAL;
+          const xpToRemove = wasAboveGoal ? MOCK_TEST_XP_PER_TEST + MOCK_TEST_BONUS_XP : MOCK_TEST_XP_PER_TEST;
+          return {
+            mockTestCount: newCount,
+            xp: Math.max(0, state.xp - xpToRemove),
+          };
+        });
+      },
     }),
     {
       name: 'nituNeet2025',
@@ -258,6 +296,7 @@ useStore.subscribe(async (state) => {
       doneQuests: state.doneQuests,
       questsDone: state.questsDone,
       streakClaimedToday: state.streakClaimedToday,
+      mockTestCount: state.mockTestCount ?? 0,
       lastUpdated: new Date().toISOString()
     };
     

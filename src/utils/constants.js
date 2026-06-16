@@ -23,12 +23,15 @@ export const getLevel = (xp) => {
   return LEVELS[0];
 };
 
+export const MOCK_TEST_DAILY_GOAL = 3; // Realistic goal: 3 full mocks per day
+export const MOCK_TEST_XP_PER_TEST = 120; // XP per mock test
+export const MOCK_TEST_BONUS_XP = 80;    // Extra XP per test above goal
+
 export const DEFAULT_TASKS = [
   { id: 'dt_phy', subject: 'Physics', chapterId: null, pyqs: 0, done: false, xp: 80, name: '⚡ Physics Goal' },
   { id: 'dt_che', subject: 'Chemistry', chapterId: null, pyqs: 0, done: false, xp: 80, name: '🧪 Chemistry Goal' },
   { id: 'dt_bot', subject: 'Botany', chapterId: null, pyqs: 0, done: false, xp: 50, name: '🌿 Botany Goal' },
   { id: 'dt_zoo', subject: 'Zoology', chapterId: null, pyqs: 0, done: false, xp: 50, name: '🦁 Zoology Goal' },
-  { id: 'dt_mock', subject: 'Mock Test', chapterId: null, pyqs: 0, done: false, xp: 150, name: '📝 Full Mock Test' },
   { id: 'dt_fun', subject: 'Self Care', chapterId: null, pyqs: 0, done: false, xp: 50, name: '💖 Spend time doing what you love' }
 ];
 
@@ -43,5 +46,6 @@ export const INITIAL_STATE = {
   completedChapters: {},
   dailyTasks: [...DEFAULT_TASKS],
   lastLoginDate: null,
-  streakClaimedToday: false
+  streakClaimedToday: false,
+  mockTestCount: 0,
 };
